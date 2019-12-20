@@ -20,6 +20,7 @@ PRs welcome!
 * [API](https://marisademeglio.github.io/pubmanifest-parse/api)
 * [Working example](https://marisademeglio.github.io/pubmanifest-parse/example)
 * [Run the tests](https://marisademeglio.github.io/pubmanifest-parse/tests/run-tests.html)
+    * _Two of them fail currently because of differences between servers used in testing (local vs github)_
 
 To run anything locally (examples, tests), first start a web server, e.g. `npx http-serve -c-1`.
 
