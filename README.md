@@ -8,7 +8,7 @@ These rules dictate how to process and normalize the data, so, for example, all 
 
 This is __not__ intended to be a manifest validator. Errors are reported only when they affect processing.
 
-To use it, copy the files in `src/` to your project.
+To use it, copy the files in [`src/`](https://github.com/marisademeglio/pubmanifest-parse/tree/master/src) to your project.
 
 I wrote this to help with some demos I'm working on. My target is the browser, and I wrote this processor as an ES6 module. It would be easy enough to port to other environments.
 
@@ -25,7 +25,7 @@ To run anything locally (examples, tests), first start a web server, e.g. `npx h
 
 # Caveats
 
-Does not:
+Does not (at the moment):
 * perform [global data checks](https://www.w3.org/TR/pub-manifest/#dfn-global-data-checks)
 * differentiate the severity of validation errors (as described in [error handling](https://www.w3.org/TR/pub-manifest/#processing-errors))
 
