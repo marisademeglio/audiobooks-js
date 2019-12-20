@@ -12,6 +12,12 @@
         <script src="../src/manifest.js" type="module"></script>
         <script type="module">
             import { Manifest } from '../src/manifest.js';
+            document.addEventListener("DOMContentLoaded", () => {
+                let inputFile = new URL("pub/manifest.json", document.location.href).href;
+                document.querySelector("#inputFile").setAttribute('value', inputFile);
+
+            });
+
             document.querySelector("#load").addEventListener('click', async e => {
                 clearAll();
 
