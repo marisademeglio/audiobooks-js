@@ -35,7 +35,7 @@
                 manifest.setDefaults({direction: 'ltr'});
                 
                 // load a file
-                await manifest.loadUrl(new URL('pub/manifest.json', document.location.href));
+                await manifest.loadUrl(document.querySelector("#inputFile").value);
                 
                 // report any errors
                 if (manifest.errors.length > 0) {
