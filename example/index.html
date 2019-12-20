@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>pubmanifest-parse example</title>
+        <style>
+            input {
+                width: 20vw;
+            }
+        </style>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+        <script src="../src/manifest.js" type="module"></script>
+        <script type="module">
+            import { Manifest } from '../src/manifest.js';
+            document.querySelector("#load").addEventListener('click', async e => {
+                clearAll();
+
+                let manifest = new Manifest();
+
+                // do a little setup
+                manifest.setSupportedProfiles([{
+                    id: "https://example.com/publication/",
+                    encodingFormats: ['text/html']
+                },
+                {
+                    id: "https://www.w3.org/TR/audiobooks/",
+                    encodingFormats: ['audio/mpeg']
+                }]);
+                manifest.setDefaults({direction: 'ltr'});
+                
+                // load a file
+                await manifest.loadUrl(new URL('pub/manifest.json', document.location.href));
+                
+                // report any errors
+                if (manifest.errors.length > 0) {
+                    document.querySelector("#status").innerHTML = "Error(s)";
+                    document.querySelector("#data").innerHTML = JSON.stringify(manifest.errors, null, 2);
+                }
+
+                // if there were no fatal errors, go ahead
+                if (manifest.errors.filter(e=>e.severity === "fatal").length == 0) {
+                    document.querySelector("#status").innerHTML = "Processed file";
+                    document.querySelector("#data").innerHTML = JSON.stringify(manifest.data, null, 2);
+                }
+
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+            });
+
+            function clearAll() {
+                document.querySelector("#status").innerHTML = '';
+                document.querySelector("#data").innerHTML = '';
+            }
+            
+        </script>
+    </head>
+    <body>
+        <h1>Using <code>pubmanifest-parse</code></h1>
+        <p>Version 0.1.0</p>
+
+        <p>Click "load" to load the sample file (or enter your own URL) and see the processed data output.</p>
+        <input id="inputFile" value="http://localhost:8080/example/pub/manifest.json"></input>
+        <button id="load">Load</button>
+
+        <pre><code id="status" class="json"></code></pre>
+        <pre><code id="data" class="json"></code></pre> 
+
+    </body>
+</html> 

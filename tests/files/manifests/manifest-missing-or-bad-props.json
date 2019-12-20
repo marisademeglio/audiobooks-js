@@ -1,0 +1,64 @@
+{
+    "@context": [
+        "https://schema.org",
+        "https://www.w3.org/ns/pub-context",
+        {"language" : "en", "direction": "ltr"}
+    ],
+    "conformsTo": "https://example.com/publication/",
+    "url": "https://publisher.example.org/mobydick",
+    "author": "Herman Melville",
+    
+    "dateModified": "My Birthday, 2020",
+    "datePublished": "2020-14-35",
+    "inLanguage": ["en", "mmm@@mmm"],
+
+    "accessModeSufficient": ["textual", 
+        {
+            "type": "ItemList",
+            "itemListElement": ["auditory"],
+            "description": "Audio"
+        },
+        {
+            "type": "Listicle",
+            "itemListElement": ["tactile"],
+            "description": "Touch"
+        }
+    ],
+    "duration": "FiveSeconds",
+
+    "readingProgression": "diagonal",
+
+    "readingOrder": [
+        "html/title.html"
+    ],
+
+    "resources": [
+        "css/mobydick.css",
+        {
+            "type": "LinkedResource",
+            "rel": "cover",
+            "url": "images/cover.jpg",
+            "encodingFormat": "image/jpeg"
+        },{
+            "type": "LinkedResource",
+            "url": "html/toc.html",
+            "rel": "contents"
+        },{
+            "type": "LinkedResource",
+            "url": "fonts/STIXGeneral.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "LinkedResource",
+            "url": "fonts/STIXGeneralBol.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "LinkedResource",
+            "url": "fonts/STIXGeneralBolIta.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "LinkedResource",
+            "url": "fonts/STIXGeneralItalic.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        }
+    ]
+}
