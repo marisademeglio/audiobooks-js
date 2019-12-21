@@ -1,6 +1,6 @@
 # Pubmanifest-parse
 
-Version: 0.1.0
+Version: 0.1.1
 
 This is a (relatively) spec-compliant publication manifest processor. Given JSON input, it performs the processing steps as described in the [pub-manifest spec](https://www.w3.org/TR/pub-manifest/#manifest-processing). It also has additional processing rules for [audiobooks](https://www.w3.org/TR/audiobooks/#audio-manifest-processing). 
 
@@ -8,7 +8,7 @@ These rules dictate how to process and normalize the data, so, for example, all 
 
 This is __not__ intended to be a manifest validator. Errors are reported only when they affect processing.
 
-To use it, copy the files in [`src/`](https://github.com/marisademeglio/pubmanifest-parse/tree/master/src) to your project.
+To use it, copy [`pubmanifest-parse.min.js`](https://github.com/marisademeglio/pubmanifest-parse/tree/master/build/pubmanifest-parse.min.js) to your project.
 
 I wrote this to help with some demos I'm working on. My target is the browser, and I wrote this processor as an ES6 module. It would be easy enough to port to other environments.
 
