@@ -9,15 +9,20 @@
         </style>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-        <script src="../build/pubmanifest-parse.min.js" type="module"></script>
+        <script src="../src/manifest.js" type="module"></script>
         <script type="module">
-            import { Manifest } from '../build/pubmanifest-parse.min.js';
-            var manifest;
+            import { Manifest } from '../src/manifest.js';
             document.addEventListener("DOMContentLoaded", () => {
                 let inputFile = new URL("pub/manifest.json", document.location.href).href;
                 document.querySelector("#inputFile").setAttribute('value', inputFile);
-                
-                manifest = new Manifest();
+
+            });
+
+            document.querySelector("#load").addEventListener('click', async e => {
+                clearAll();
+
+                let manifest = new Manifest();
+
                 // do a little setup
                 manifest.setSupportedProfiles([{
                     id: "https://example.com/publication/",
@@ -28,11 +33,6 @@
                     encodingFormats: ['audio/mpeg']
                 }]);
                 manifest.setDefaults({direction: 'ltr'});
-                document.querySelector("#version").textContent = manifest.version;
-            });
-
-            document.querySelector("#load").addEventListener('click', async e => {
-                clearAll();
                 
                 // load a file
                 await manifest.loadUrl(document.querySelector("#inputFile").value);
@@ -63,7 +63,7 @@
     </head>
     <body>
         <h1>Using <code>pubmanifest-parse</code></h1>
-        <p>Version <span id="version"></span></p>
+        <p>Version 0.1.0</p>
 
         <p>Click "load" to load the sample file (or enter your own URL) and see the processed data output.</p>
         <input id="inputFile" value="http://localhost:8080/example/pub/manifest.json"></input>
