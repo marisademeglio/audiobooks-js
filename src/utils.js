@@ -3,7 +3,7 @@
 const AUDIOMIMES = 
 [
     'audio/wav', 'audio/mpeg',  'audio/ogg', 'audio/webm', 'audio/mp4', 'audio/aac', 'audio/aacp',
-    'audio/flac', 'audio/ogg'
+    'audio/flac', 'audio/ogg', 'audio/mp3'
 ];
 
 // common image file types
