@@ -86,8 +86,11 @@ function normalizeData(term, value, lang, dir, base) {
         }
     }
     else if (TermDefs.ARRAY_OF_LINKED_RESOURCES.includes(term)) {
-        if (typeof value === "string" || value instanceof Array) {
+        if (typeof value === "string" || value instanceof Array || value instanceof Object) {
             let val = typeof value === "string" ? [{url: value}] : value;
+            if (val instanceof Object && !(val instanceof Array)) {
+                val = [val];
+            }
 
             let entities = val.map (item => {
                 if (typeof item === "string" || item instanceof Object) {

@@ -1,6 +1,4 @@
-# Pubmanifest-parse
-
-Version: 0.1.1
+Version: 0.1.2
 
 This is a (relatively) spec-compliant publication manifest processor. Given JSON input, it performs the processing steps as described in the [pub-manifest spec](https://www.w3.org/TR/pub-manifest/#manifest-processing). It also has additional processing rules for [audiobooks](https://www.w3.org/TR/audiobooks/#audio-manifest-processing). 
 
