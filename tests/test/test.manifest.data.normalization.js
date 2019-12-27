@@ -64,5 +64,13 @@ describe(`pubmanifest-parse data normalization tests`, function() {
             expect(manifest.data.readingOrder[1].type[0]).to.equal('LinkedResource');
         })
     });
+
+    describe('Alternate is an array', function () {
+        let filename = 'manifests/manifest-audiobook-alternate.json';
+        it(`Makes alternate an array`, async function() {
+            let manifest = await loadManifest(filename);
+            expect(manifest.data.readingOrder[0].alternate instanceof Array).to.equal(true);
+        });
+    });
 });
 
