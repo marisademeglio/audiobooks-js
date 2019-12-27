@@ -256,6 +256,9 @@ function normalizeData(term, value, lang, dir, base) {
                     if (!v.type.includes('LinkedResource')) {
                         v = {...v, type: v.type.concat('LinkedResource')};
                     }
+                    if (v.hasOwnProperty('url')) {
+                        v.originalUrl = v.url; // save the original URL in case we want a relative value
+                    }
                     Object.keys(v).map(key => {
                         let retval = normalizeData(key, v[key], lang, dir, base);
                         if (retval.success) {
@@ -770,7 +773,7 @@ class Manifest {
         };
         this.readingOrderIndex = 0;
         this.toc = false;
-        this.version = "0.1.3";
+        this.version = "0.1.4";
     }
     
     setSupportedProfiles(supportedProfiles) {

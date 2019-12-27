@@ -64,6 +64,7 @@ describe(`pubmanifest-parse data validation tests`, function() {
             expect(manifest.data.links[1]).to.deep.equal({
                 type: ["LinkedResource"],
                 url: new URL("html/supplement.html", manifest.data.base).href,
+                originalUrl: 'html/supplement.html',
                 rel: ["supplement"],
                 encodingFormat: "text/html"
             });

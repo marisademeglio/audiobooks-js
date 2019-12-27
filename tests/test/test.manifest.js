@@ -48,6 +48,7 @@ describe(`pubmanifest-parse general tests`, function() {
                 {
                     rel: ["contents"],
                     url: new URL("html/toc.html", manifest.data.base).href,
+                    originalUrl: 'html/toc.html',
                     type: ["LinkedResource"],
                     encodingFormat: "text/html"
                 }

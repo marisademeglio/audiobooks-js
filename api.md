@@ -25,6 +25,11 @@ Contains the processed manifest data. Also includes these properties:
 * `toc` (audiobooks only): `true/false` if an HTML resource containing `[role=doc-toc]` is present
 * `base`: base URL
 
+Reading order items have two `url` properties:
+
+* `url`: the absolute URL of the resource
+* `originalUrl`: the original URL as appears in the manifest document. May be relative. Useful for storing references to the reading order entry in order to maintain them even if the publication itself moves locations (e.g. someone starts localhost:8181 instead of :8080 -- all the bookmarks should not break)
+
 ### `errors`
 
 Array of errors. Each error looks like this:

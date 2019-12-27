@@ -36,7 +36,7 @@ describe(`pubmanifest-parse reading order tests`, function() {
         }); 
     });
     
-    describe('Relative reading order urls', function() {
+    describe('Relative urls', function() {
         let filename = 'manifests/manifest.json';
         it('Finds an item by relative URL', async function() {
             let manifest = await loadManifest(filename);
@@ -44,7 +44,17 @@ describe(`pubmanifest-parse reading order tests`, function() {
             expect(readingOrderItem.url).to.equal(new URL('html/title.html', manifest.data.base).href);
             readingOrderItem = manifest.updateCurrentReadingOrderIndex('html/page.html');
             expect(readingOrderItem.url).to.equal(new URL('html/page.html', manifest.data.base).href);
-        })
-    })
+        });
+        it('Maintains the original URL in a special property', async function () {
+            let manifest = await loadManifest(filename);
+            let readingOrderItem = manifest.getCurrentReadingOrderItem();
+            expect(readingOrderItem.hasOwnProperty('originalUrl')).to.equal(true);
+            expect(readingOrderItem.originalUrl).to.equal('html/title.html');
+        });
+    });
+
+    describe('Maintains the original URL', function () {
+        let filename = 'manifests/manifest'
+    });
 });
 
