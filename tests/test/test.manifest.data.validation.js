@@ -54,7 +54,7 @@ describe(`pubmanifest-parse data validation tests`, function() {
         it('Collects the unique resources', async function() {
             let manifest = await loadManifest(filename);
             expect(manifest.data.hasOwnProperty('uniqueResources')).to.equal(true);
-            expect(manifest.data.uniqueResources.length).to.equal(8);
+            expect(manifest.data.uniqueResources.length).to.equal(9);
         });
     });
     describe('Links (manifest-bad-links.json)', function() {

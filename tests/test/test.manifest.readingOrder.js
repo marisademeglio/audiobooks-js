@@ -33,7 +33,18 @@ describe(`pubmanifest-parse reading order tests`, function() {
             let manifest = await loadManifest(filename);
             let readingOrderItem = manifest.updateCurrentReadingOrderIndex("http://www.archive.org/download/flatland_rg_librivox/flatland_7_abbott.mp3");
             expect(readingOrderItem.url).to.equal("http://www.archive.org/download/flatland_rg_librivox/flatland_7_abbott.mp3");
-        });
+        }); 
     });
+    
+    describe('Relative reading order urls', function() {
+        let filename = 'manifests/manifest.json';
+        it('Finds an item by relative URL', async function() {
+            let manifest = await loadManifest(filename);
+            let readingOrderItem = manifest.getCurrentReadingOrderItem();
+            expect(readingOrderItem.url).to.equal(new URL('html/title.html', manifest.data.base).href);
+            readingOrderItem = manifest.updateCurrentReadingOrderIndex('html/page.html');
+            expect(readingOrderItem.url).to.equal(new URL('html/page.html', manifest.data.base).href);
+        })
+    })
 });
 
