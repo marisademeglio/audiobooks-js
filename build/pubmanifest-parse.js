@@ -770,7 +770,7 @@ class Manifest {
         };
         this.readingOrderIndex = 0;
         this.toc = false;
-        this.version = "0.1.2";
+        this.version = "0.1.3";
     }
     
     setSupportedProfiles(supportedProfiles) {
@@ -880,9 +880,13 @@ class Manifest {
     }
 
     // set the reading order index to the reading order item that matches this url
+    // absolute and relative URLs are both ok
     updateCurrentReadingOrderIndex(url) {
+        let url_ = url.indexOf("://") == -1 ? 
+            new URL(url, this.data.base) : new URL(url);
+        
         if (this.data.readingOrder) {
-            let idx = this.data.readingOrder.findIndex(item => item.url == url);
+            let idx = this.data.readingOrder.findIndex(item => item.url == url_.href);
             if (idx != -1) {
                 this.readingOrderIndex = idx;
                 return this.getCurrentReadingOrderItem();
