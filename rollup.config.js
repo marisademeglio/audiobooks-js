@@ -1,8 +1,8 @@
 export default {
     input: './src/manifest.js',
     output: {
-        file: './build/pubmanifest-parse.js',
+        file: './build/audiobooks-js.js',
         format: 'esm',
-        name: 'pubmanifest-parse'
+        name: 'audiobooks-js'
     }
 }

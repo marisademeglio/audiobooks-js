@@ -2,7 +2,7 @@ import { loadManifest, expectError } from '../test.manifest.helpers.js';
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse lang and dir tests`, function() {
+describe(`audiobooks-js lang and dir tests`, function() {
     
     describe('Incorrect language tag and dir value (manifest-invalid-lang-dir.json)', function () {
         let filename = 'manifests/manifest-invalid-lang-dir.json';

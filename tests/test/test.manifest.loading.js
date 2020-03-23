@@ -2,7 +2,7 @@ import { loadManifest, expectError } from '../test.manifest.helpers.js';
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse loading tests`, function() {
+describe(`audiobooks-js loading tests`, function() {
     describe('Invalid json input (manifest-not-json.json)', function () {
         let filename = 'manifests/manifest-not-json.json';
         it('Reports a fatal error', async function () {    

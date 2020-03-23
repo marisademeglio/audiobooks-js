@@ -2,7 +2,7 @@ import { loadManifest, loadManifestWithDefaults } from '../test.manifest.helpers
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse data normalization tests`, function() {
+describe(`audiobooks-js data normalization tests`, function() {
     
     describe('Data normalization (strings) (manifest-normalize.json)', function () {
         let filename = 'manifests/manifest-normalize.json';

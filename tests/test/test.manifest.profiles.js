@@ -2,7 +2,7 @@ import { loadManifestGuessProfile, expectError } from '../test.manifest.helpers.
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse profile guessing tests`, function() {
+describe(`audiobooks-js profile guessing tests`, function() {
     
     describe('Profile not recognized, resources not recognized (manifest-no-profile-not-html.json)', function () {
         let filename = 'manifests/manifest-no-profile-not-html.json';

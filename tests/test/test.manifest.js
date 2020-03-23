@@ -2,7 +2,7 @@ import { loadManifest, loadManifestJson, loadManifestWithDefaults, expectError }
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse general tests`, function() {
+describe(`audiobooks-js general tests`, function() {
     
     describe('Allows title and base overrides (manifest-no-title.json)', function () {
         let filename = 'manifests/manifest-no-title.json';

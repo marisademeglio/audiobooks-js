@@ -2,7 +2,7 @@ import { loadManifest, expectError } from '../test.manifest.helpers.js';
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse data validation tests`, function() {
+describe(`audiobooks-js data validation tests`, function() {
     
     describe('Data validation (manifest-missing-or-bad-props.json)', function() {
         let filename = 'manifests/manifest-missing-or-bad-props.json';

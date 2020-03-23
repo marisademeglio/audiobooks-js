@@ -2,7 +2,7 @@ import { loadManifest, loadManifestJson, loadManifestGuessProfile, loadManifestW
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse reading order tests`, function() {
+describe(`audiobooks-js reading order tests`, function() {
     
     describe('Reading order navigation (manifest-toc.json)', function() {
         let filename = 'manifests/manifest-toc.json';

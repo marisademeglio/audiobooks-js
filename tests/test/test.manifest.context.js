@@ -2,7 +2,7 @@ import { loadManifest, expectError } from '../test.manifest.helpers.js';
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse context tests`, function() {
+describe(`audiobooks-js context tests`, function() {
     
     describe(`Property @context missing (manifest-context-missing.json)`, function() {
         let filename = 'manifests/manifest-context-missing.json';

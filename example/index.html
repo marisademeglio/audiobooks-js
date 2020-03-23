@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>pubmanifest-parse example</title>
+        <title>audiobooks-js example</title>
         <style>
             input {
                 width: 20vw;
@@ -9,9 +9,9 @@
         </style>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-        <script src="../build/pubmanifest-parse.min.js" type="module"></script>
+        <script src="../build/audiobooks-js.min.js" type="module"></script>
         <script type="module">
-            import { Manifest } from '../build/pubmanifest-parse.min.js';
+            import { Manifest } from '../build/audiobooks-js.min.js';
             var manifest;
             document.addEventListener("DOMContentLoaded", () => {
                 let inputFile = new URL("pub/manifest.json", document.location.href).href;
@@ -62,7 +62,7 @@
         </script>
     </head>
     <body>
-        <h1>Using <code>pubmanifest-parse</code></h1>
+        <h1>Using <code>audiobooks-js</code></h1>
         <p>Version <span id="version"></span></p>
 
         <p>Click "load" to load the sample file (or enter your own URL) and see the processed data output.</p>

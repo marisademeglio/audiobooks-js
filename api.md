@@ -1,4 +1,4 @@
-# Pubmanifest-parse API
+# Audiobooks-js API
 
 Get started:
 

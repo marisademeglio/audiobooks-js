@@ -2,7 +2,7 @@ import { loadManifest, loadManifestWithDefaults, expectError } from '../test.man
 
 const expect = chai.expect;
 
-describe(`pubmanifest-parse audiobooks tests`, function() {
+describe(`audiobooks-js audiobooks spec tests`, function() {
     
     describe('Basic audiobook manifest tests (manifest-audiobook.json)', function() {
         let filename = 'manifests/manifest-audiobook.json';
