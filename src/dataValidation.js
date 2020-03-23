@@ -30,6 +30,7 @@ function dataValidation(processed) {
     } 
 
     if (!processed_.hasOwnProperty('type') || processed_.type.length == 0 ) {
+        errors.push({severity: "validation", msg: "No type"});
         processed_.type = ['CreativeWork'];
     }
 
@@ -61,7 +62,7 @@ function dataValidation(processed) {
 
     if (processed_.hasOwnProperty('inLanguage')) {
         processed_.inLanguage.filter(lang => !isValidLanguageTag(lang))
-            .map(invalidItem => errors.push({severity: "validation", msg: `Invalid languge tag *${invalidItem}*`}));
+            .map(invalidItem => errors.push({severity: "validation", msg: `Invalid language tag *${invalidItem}*`}));
         processed_.inLanguage = processed_.inLanguage.filter(lang => isValidLanguageTag(lang));
     }
 
