@@ -18,14 +18,29 @@
             tbody td {
                 padding: 1rem;
             }
+            .failed {
+                text-decoration: underline;
+                text-decoration-color: red;
+                background-color:rgba(255, 0, 0, 0.25);
+                
+            }
+            #number-failed:not(.nonefailed)::after {
+                content: '😓';
+            }
+            #number-failed.nonefailed::after {
+                content: '😃';
+            }
+            #number-passed::after {
+                content: '✅';
+            }
         </style>
     </head>
     <body>
         <h1>Results</h1>
         <h2>Testsuite: <a id="testsuite"></a></h2>
 
-        <p><span id="number-passed"></span> Passed ✅</p>
-        <p><span id="number-failed"></span> Failed 😓</p>
+        <p id="number-passed"><span></span> Passed </p>
+        <p id="number-failed"><span></span> Failed </p>
 
         <table>
             <thead>
@@ -55,7 +70,7 @@
                 document.querySelector("tbody").innerHTML = 
                     data.map(d => `<tr>
                         <td>
-                            <a href="testsuite.html?file=${testsuiteHref}&testId=${d.id}">
+                            <a href="../testsuite.html?file=${testsuiteHref}&testId=${d.id}">
                                 ${d.id}
                             </a>
                         </td>
@@ -64,11 +79,14 @@
                         </td>
                     </tr>`).join('');
                 
-                document.querySelector("#number-passed").textContent = 
+                document.querySelector("#number-passed span").textContent = 
                     data.filter(d => d.passed).length;
                 
-                document.querySelector("#number-failed").textContent = 
+                document.querySelector("#number-failed span").textContent = 
                     data.filter(d => !d.passed).length;
+                if (data.filter(d => !d.passed).length == 0) {
+                    document.querySelector("#number-failed").classList.add('nonefailed');
+                }
             }
             
         </script>
