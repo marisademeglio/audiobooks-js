@@ -1,4 +1,4 @@
-Version: 0.1.4
+Version: 0.2.0
 
 This is a (relatively) spec-compliant audiobooks manifest processor. Given JSON input, it performs the processing steps as described in both [pub-manifest spec](https://www.w3.org/TR/pub-manifest/#manifest-processing) and  [audiobooks](https://www.w3.org/TR/audiobooks/#audio-manifest-processing). 
 
@@ -14,14 +14,15 @@ PRs welcome!
 
 # Links
 
-* [Github](https://github.com/marisademeglio/audiobooks-js)
-* [API](https://marisademeglio.github.io/audiobooks-js/api)
-* [Working example](https://marisademeglio.github.io/audiobooks-js/example)
-* [Run the tests](https://marisademeglio.github.io/audiobooks-js/tests/run-tests.html)
+* [Github](https://github.com/marisademeglio/audiobooks-js): Source code
+* [API](https://marisademeglio.github.io/audiobooks-js/api): Documentation
+* [Working example](https://marisademeglio.github.io/audiobooks-js/example): Try it
+* [Run the tests](https://marisademeglio.github.io/audiobooks-js/tests/run-tests.html): Try it!
     * _Two of them fail currently because of differences between servers used in testing (local vs github)_
-* [Run the W3C publ-tests](https://marisademeglio.github.io/audiobooks-js/official-tests)
+* [Run the W3C publ-tests](https://marisademeglio.github.io/audiobooks-js/official-tests): Try them!! (It doesn't affect anything)
     * [Audiobooks manifest processing test results](https://marisademeglio.github.io/audiobooks-js/official-tests/results/audiobooks.html) as of 22 March 2020
     * [Publication manifest processing test results](https://marisademeglio.github.io/audiobooks-js/official-tests/results/pubmanifest.html) as of 22 March 2020
+
 To run anything locally (examples, tests), first start a web server, e.g. `npx http-serve -c-1`.
 
 # Caveats
