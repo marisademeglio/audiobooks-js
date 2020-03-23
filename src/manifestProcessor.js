@@ -94,10 +94,14 @@ class ManifestProcessor {
     checkContext() {
         if (this.json.hasOwnProperty('@context')) {
             if (this.json['@context'] instanceof Array) {
-                if (this.json['@context'].length >= 2 && 
-                    (this.json['@context'][0] != "https://schema.org" || 
-                        this.json['@context'][1] != "https://www.w3.org/ns/pub-context")) {
+                if (this.json['@context'].length >= 2) {
+                    if (this.json['@context'][0] != "https://schema.org" ||  
+                        this.json['@context'][1] != "https://www.w3.org/ns/pub-context") {
                         throw 'Property "@context" does not contain the required values';
+                    }
+                }
+                else {
+                    throw 'Property @context does not contain the required values';
                 }
             }   
             else {
