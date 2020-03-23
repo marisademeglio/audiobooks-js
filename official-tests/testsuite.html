@@ -13,14 +13,9 @@
                 display: grid;
                 grid-template-areas: 
                 "section section"
-                "test answer"
-                "footer footer";
+                "test answer";
                 grid-template-columns: 70% auto;
-                grid-template-rows: 15vh auto 5vh;
-            }
-            footer {
-                grid-area: footer;
-                border-top: solid thin black;
+                grid-template-rows: 15vh auto;
             }
             #section-info {
                 grid-area: section;
@@ -71,7 +66,10 @@
     </head>
     <body>
         <header>
-            <h1>Testsuite: <a id="testsuite-name"></a> (<span id="testsuite-date"></span>)</h1>
+            <h1>Library: <a href="https://marisademeglio.github.io/audiobooks-js/"><code>audiobooks-js</code></a>
+            <br/>
+            Testsuite: <a id="testsuite-name"></a> (<span id="testsuite-date"></span>)</h1>
+            
         </header>
         <main>
             <div id="section-info">
@@ -105,7 +103,7 @@
                     </tr>
                 </table>
                 
-                <h4>Manifest processing results:</h4>
+                <h4>Manifest processing results after running <a href="https://marisademeglio.github.io/audiobooks-js/"><code>audiobooks-js</code></a>:</h4>
                 <div id="errors">
                     <h5>Errors:</h5>
                     <p></p>
@@ -127,10 +125,6 @@
                 <p><a>Show results</a></p>
             </div>
         </main>
-        <footer>
-            <p><a href="https://w3c.github.io/publ-tests/">Publ-tests</a> runner for 
-                <a href="https://marisademeglio.github.io/audiobooks-js/">audiobooks-js</a></p>
-        </footer>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
         <script src="../build/audiobooks-js.js" type="module"></script>
