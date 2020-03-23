@@ -1,4 +1,4 @@
-Version: 0.1.4
+Version: 0.2.0
 
 This is a (relatively) spec-compliant publication manifest processor. Given JSON input, it performs the processing steps as described in the [pub-manifest spec](https://www.w3.org/TR/pub-manifest/#manifest-processing). It also has additional processing rules for [audiobooks](https://www.w3.org/TR/audiobooks/#audio-manifest-processing). 
 
@@ -22,6 +22,7 @@ PRs welcome!
 * [Run the W3C publ-tests](https://marisademeglio.github.io/pubmanifest-parse/official-tests)
     * [Audiobooks manifest processing test results](https://marisademeglio.github.io/pubmanifest-parse/official-tests/results/audiobooks.html) as of 22 March 2020
     * [Publication manifest processing test results](https://marisademeglio.github.io/pubmanifest-parse/official-tests/results/pubmanifest.html) as of 22 March 2020
+
 To run anything locally (examples, tests), first start a web server, e.g. `npx http-serve -c-1`.
 
 # Caveats
