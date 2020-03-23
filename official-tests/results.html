@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Results</title>
+        <style>
+            thead {
+                border-bottom: thin black solid;
+            }
+            th, td {
+                text-align: left;
+            }
+            td:last-child, th:last-child{
+                padding-left: 4rem;
+            }
+            tbody tr:nth-child(odd) {
+                background-color: lightyellow;
+            }
+            tbody td {
+                padding: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Results</h1>
+        <h2>Testsuite: <a id="testsuite"></a></h2>
+
+        <p><span id="number-passed"></span> Passed ✅</p>
+        <p><span id="number-failed"></span> Failed 😓</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+
+        <script>
+            let urlSearchParams = new URLSearchParams(document.location.search);
+            if (urlSearchParams.has("testsuiteName")) {
+                document.querySelector("#testsuite").textContent = urlSearchParams.get("testsuiteName");
+            }
+            let testsuiteHref = '';
+            if (urlSearchParams.has("testsuiteHref")) {
+                testsuiteHref = urlSearchParams.get("testsuiteHref");
+                document.querySelector("#testsuite").setAttribute("href", 
+                    testsuiteHref);
+            }
+            if (urlSearchParams.has("data")) {
+                let data = JSON.parse(decodeURI(urlSearchParams.get("data")));
+                document.querySelector("tbody").innerHTML = 
+                    data.map(d => `<tr>
+                        <td>
+                            <a href="testsuite.html?file=${testsuiteHref}&testId=${d.id}">
+                                ${d.id}
+                            </a>
+                        </td>
+                        <td class="${d.passed ? 'passed' : 'failed'}">
+                            ${d.passed ? 'Pass' : 'Fail'}
+                        </td>
+                    </tr>`).join('');
+                
+                document.querySelector("#number-passed").textContent = 
+                    data.filter(d => d.passed).length;
+                
+                document.querySelector("#number-failed").textContent = 
+                    data.filter(d => !d.passed).length;
+            }
+            
+        </script>
+    </body>
+</html>

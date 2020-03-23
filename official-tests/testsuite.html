@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Publ-tests runner</title>
+        <style>
+            html {
+                height: 100%;
+            }
+            body {
+                height: 100%;
+            }
+            main {
+                display: grid;
+                grid-template-areas: 
+                "section section"
+                "test answer"
+                "footer footer";
+                grid-template-columns: 70% auto;
+                grid-template-rows: 15vh auto 5vh;
+            }
+            footer {
+                grid-area: footer;
+                border-top: solid thin black;
+            }
+            #section-info {
+                grid-area: section;
+            }
+            tr > * {
+                text-align: left;
+            }
+            td:last-child{
+                padding-left: 4rem;
+            }
+            #test {
+                grid-area: test;
+            }
+            #test h3 code {
+                font-size: larger;
+                background-color: lightgray;
+            }
+            #test h3 {
+                margin-top: 0;
+            }
+            #answer {
+                grid-area: answer;
+                width: 20%;
+                display: flex;
+            }
+            #answer button {
+                border-radius: 4px;
+                cursor: pointer;
+                height: min-content;
+                align-self: top;
+            }
+            #pass {
+                border: green thick solid;
+
+            }
+            #fail {
+                border: red thick solid;
+                margin-left: auto;
+            }
+            .disabled {
+                display: none !important;
+            }
+            .alert {
+                background-color: lightyellow;
+                border: yellow thin solid;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Testsuite: <a id="testsuite-name"></a> (<span id="testsuite-date"></span>)</h1>
+        </header>
+        <main>
+            <div id="section-info">
+                <h2>Section: </h2>
+                <p><a id="section-name"></a></p>
+            </div>
+            
+            <div id="test">
+                <h3>Test: <code id="test-id"></code></h3>
+                <p id="standalone"><a href="">Run test as standalone</a></p>
+                <table id="test-info" summary="test information">
+                    <tr>
+                        <th>Test file:</th>
+                        <td><a id="test-file"></a></td>
+                    </tr>
+                    <tr>
+                        <th>Description:</th>
+                        <td id="test-description"></td>
+                    </tr>
+                    <tr>
+                        <th>Actions:</th>
+                        <td id="test-actions"></td>
+                    </tr>
+                    <tr>
+                        <th>Errors:</th>
+                        <td id="test-errors"></td>
+                    </tr>
+                    <tr>
+                        <th>Media type:</th>
+                        <td id="test-mediatype"></td>
+                    </tr>
+                </table>
+                
+                <h4>Manifest processing results:</h4>
+                <div id="errors">
+                    <h5>Errors:</h5>
+                    <p></p>
+                    <pre><code class="json"></code></pre> 
+                </div>
+                <div id="processed">
+                    <h5>Processed manifest:</h5>
+                    <pre><code class="json"></code></pre> 
+                </div>
+                
+            </div>
+            <div id="answer">
+                <button id="pass">Pass</button>
+                <button id="fail">Fail</button>
+            </div>
+            
+            <div id="done" class="disabled">
+                <p>Done!</p>
+                <p><a>Show results</a></p>
+            </div>
+        </main>
+        <footer>
+            <p><a href="https://w3c.github.io/publ-tests/">Publ-tests</a> runner for 
+                <a href="https://marisademeglio.github.io/pubmanifest-parse/">pubmanifest-parse</a></p>
+        </footer>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+        <script src="../build/pubmanifest-parse.min.js" type="module"></script>
+        <script type="module">
+            import { Manifest } from '../build/pubmanifest-parse.js';
+            
+            // load the testsuite file
+            let urlSearchParams = new URLSearchParams(document.location.search);
+            let base;
+            let items = [];
+            let idx = 0;
+            let answers = [];
+            document.querySelector("#pass").addEventListener("click", e => {
+                recordResult(true);
+                next();
+            });
+            document.querySelector("#fail").addEventListener("click", e => {
+                recordResult(false);
+                next();
+            });
+            
+
+            if (urlSearchParams.has("file")) {
+                base = urlSearchParams.get("file");
+                open(urlSearchParams.get("file"));
+            }
+            async function open(file) {
+                let indexFile = await fetch(file);
+                let text = await indexFile.text();
+                let json = JSON.parse(text);
+                document.querySelector("#testsuite-name").textContent = json.title;
+                document.querySelector("#testsuite-name").setAttribute("href", json.href);
+                document.querySelector("#testsuite-date").textContent = json.date;
+
+                // flatten the list
+                items = json.tests.map(testSection => 
+                    testSection.tests.map(test => 
+                        ({...test, section: testSection.section, sectionHref: testSection.href})
+                    )
+                )
+                .reduce((acc, curr) => acc.concat(curr), []);
+
+                // you can pass the test ID in the URL params but
+                // it disables the ability to accumulate answers
+                if (urlSearchParams.has("testId")) {
+                    let testId = urlSearchParams.get("testId");
+                    idx = items.findIndex(t => t.id === testId);
+                    document.querySelector("#answer").classList.add("disabled");
+                    document.querySelector("#standalone").classList.add("disabled");
+                    let p = document.createElement("p");
+                    p.classList.add("alert");
+                    p.innerHTML = `Running only test <code>${testId}</code>. Scoring disabled.`;
+                    document.querySelector("header").appendChild(p);
+                    document.title = document.title + `: ${testId}`;
+                }
+                loadTest(items[idx]);
+                
+            }
+            async function next() {
+                idx++;
+                if (idx + 1 == items.length ) {
+                    showResults();
+                }
+                else {
+                    loadTest(items[idx]);
+                }
+                
+            }
+            async function loadTest(test) {
+                
+                document.querySelector("#section-name").textContent = test.section;
+                document.querySelector("#section-name").setAttribute("href", test.sectionHref);
+                
+                let ext = test['media-type'] === 'text/html' ? 'html' : 'jsonld';
+                let testFile = `test_${test.id}.${ext}`;
+                let testUrl = new URL(testFile, base);
+
+                document.querySelector("#test-id").textContent = test.id;
+                document.querySelector("#test-description").textContent = test.description;
+                document.querySelector("#test-actions").textContent = test.actions;
+                document.querySelector("#test-errors").textContent = test.errors;
+                document.querySelector("#test-mediatype").textContent = test['media-type'];
+
+                document.querySelector("#test-file").innerHTML = `<code>${testFile}</code>`;
+                document.querySelector("#test-file").setAttribute("href", testUrl);
+
+                document.querySelector("#standalone a").setAttribute("href",
+                document.baseURI + `&testId=${test.id}`);
+                
+                let manifest = new Manifest();
+                // do a little setup
+                manifest.setSupportedProfiles([{
+                    id: "https://www.w3.org/TR/pub-manifest/",
+                    encodingFormats: ['text/html']
+                },
+                {
+                    id: "https://www.w3.org/TR/audiobooks/",
+                    encodingFormats: ['audio/mpeg']
+                }]);
+                manifest.setDefaults({direction: 'ltr'});
+                // load a file
+                await manifest.loadUrl(testUrl);
+                
+                // show the data structure
+                // report any errors
+                if (manifest.errors.length > 0) {
+                    document.querySelector("#errors code").innerHTML = JSON.stringify(manifest.errors, null, 2);
+                    let fatalErrors = manifest.errors.filter(e => e.severity === 'fatal');
+                    let validationErrors = manifest.errors.filter(e => e.severity === 'validation');
+                    document.querySelector("#errors p").textContent = 
+                        `${fatalErrors.length} fatal errors, ${validationErrors.length} validation errors.`;
+                    document.querySelector("#processed code").innerHTML = JSON.stringify(manifest.data, null, 2);
+                }
+                
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+            }
+
+            function recordResult(passed) {
+                answers.push({id: items[idx].id, passed});
+            }
+
+            function showResults() {
+                let datastring = encodeURI(JSON.stringify(answers));
+                let testsuiteName = encodeURI(document.querySelector("#testsuite-name").textContent);
+                let testsuiteHref = encodeURI(document.querySelector("#testsuite-name").getAttribute("href"));
+                document.querySelector("#section-info").classList.add("disabled");
+                document.querySelector("#test").classList.add("disabled");
+                document.querySelector("#answer").classList.add("disabled");
+                document.querySelector("#done").classList.remove("disabled");
+                document.querySelector("#done a").setAttribute("href", 
+                `results.html?data=${datastring}&testsuiteName=${testsuiteName}&testsuiteHref=${testsuiteHref}`);
+            }
+            
+        </script>
+    </body>
+</html>
