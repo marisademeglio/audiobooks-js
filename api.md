@@ -3,7 +3,7 @@
 Get started:
 
 ```
-import { Manifest } from './src/manifest.js';
+import { Manifest } from 'audiobooks.js';
 let manifest = new Manifest();
 manifest.setSupportedProfiles({
     id: "https://www.w3.org/TR/audiobooks/",
@@ -13,6 +13,13 @@ manifest.loadUrl("myfile.json");
 
 // access the following properties/methods on manifest, e.g.
 console.log("Base URL: ", manifest.data.base);
+```
+
+Caveat: There is a dependency on [`moment.js`](https://momentjs.com) so include it in your HTML file, e.g. 
+
+```
+<script src="../lib/moment.js"></script>
+<script src="../lib/audiobooks.js"></script>
 ```
 
 ## Properties

@@ -1,4 +1,4 @@
-import { fetchFile, fetchContentType, isAudioFormat, isValidDuration, getDuration, isValidDate } from '../../src/utils.js';
+import { fetchFile, fetchContentType, isAudioFormat, isValidDuration, isValidDate, getDurationInSeconds } from '../../src/utils.js';
 const expect = chai.expect;
 
 describe(`Utils`, function() {
@@ -45,37 +45,37 @@ describe(`Utils`, function() {
         it("PTS is not a duration", async function() {
             let res = isValidDuration("PTS");
             expect(res).to.equal(false);
-            res = getDuration("PTS");
-            expect(res).to.equal(-1);
+            res = getDurationInSeconds("PTS");
+            expect(res).to.equal(0);
         });
         it("PTddS is not a duration", async function() {
             let res = isValidDuration("PTddS");
             expect(res).to.equal(false);
-            res = getDuration("PTddS");
-            expect(res).to.equal(-1);
+            res = getDurationInSeconds("PTddS");
+            expect(res).to.equal(0);
         });
         it("1234S is not a duration", async function() {
             let res = isValidDuration("1234S");
             expect(res).to.equal(false);
-            res = getDuration("1234S");
-            expect(res).to.equal(-1);
+            res = getDurationInSeconds("1234S");
+            expect(res).to.equal(0);
         });
         it("00:44:22 is not a duration", async function() {
             let res = isValidDuration("00:44:22");
             expect(res).to.equal(false);
-            res = getDuration("00:44:22");
-            expect(res).to.equal(-1);
+            res = getDurationInSeconds("00:44:22");
+            expect(res).to.equal(0);
         });
         it("PT12345S is a duration of 12345 seconds", async function() {
             let res = isValidDuration("PT12345S");
             expect(res).to.equal(true);
-            res = getDuration("PT12345S");
+            res = getDurationInSeconds("PT12345S");
             expect(res).to.equal(12345);
         });
         it("PT4S is a duration of 4 seconds", async function() {
             let res = isValidDuration("PT4S");
             expect(res).to.equal(true);
-            res = getDuration("PT4S");
+            res = getDurationInSeconds("PT4S");
             expect(res).to.equal(4);
         });
         

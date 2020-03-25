@@ -127,9 +127,10 @@
         </main>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-        <script src="../build/audiobooks-js.js" type="module"></script>
+        <script src="../lib/moment.js"></script>
+        <script src="../build/audiobooks.js" type="module"></script>
         <script type="module">
-            import { Manifest } from '../build/audiobooks-js.js';
+            import { Manifest } from '../build/audiobooks.js';
             
             // load the testsuite file
             let urlSearchParams = new URLSearchParams(document.location.search);
@@ -224,7 +225,10 @@
                     id: "https://www.w3.org/TR/audiobooks/",
                     encodingFormats: ['audio/mpeg']
                 }]);
-                manifest.setDefaults({direction: 'ltr'});
+                manifest.setDefaults({
+                    title: 'Publication', 
+                    profile: 'https://www.w3.org/TR/pub-manifest/'}
+                );
                 // load a file
                 await manifest.loadUrl(testUrl);
                 
@@ -236,8 +240,12 @@
                     let validationErrors = manifest.errors.filter(e => e.severity === 'validation');
                     document.querySelector("#errors p").textContent = 
                         `${fatalErrors.length} fatal errors, ${validationErrors.length} validation errors.`;
-                    document.querySelector("#processed code").innerHTML = JSON.stringify(manifest.data, null, 2);
                 }
+                else {
+                    document.querySelector("#errors code").innerHTML = '';
+                    document.querySelector("#errors p").textContent = '0 fatal errors, 0 validation errors';
+                }
+                document.querySelector("#processed code").innerHTML = JSON.stringify(manifest.data, null, 2);
                 
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);

@@ -2,6 +2,11 @@
 <html><head>
     <title>Results</title>
     <style>
+        body > div {
+            display: grid;
+            grid-template-columns: 30rem 30rem;
+            grid-gap: 2rem;
+        }
         thead {
             border-bottom: thin black solid;
         }
@@ -30,23 +35,32 @@
         #number-passed::after {
             content: '✅';
         }
+        #jsonReport button {
+            display: block;
+            margin-bottom: 1rem;
+        }
+        
     </style>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+    
 </head>
 <body>
     <h1>Results</h1>
     <h2>Testsuite: <a id="testsuite" href="https://w3c.github.io/publ-tests/publication_manifest/manifest_processing/tests/index.json">Tests for the  publication manifest</a></h2>
 
-    <p id="number-passed"><span>49</span> Passed </p>
-    <p id="number-failed"><span>23</span> Failed </p>
+    <p id="number-passed"><span>52</span> Passed </p>
+    <p id="number-failed"><span>20</span> Failed </p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Test ID</th>
-                <th>Result</th>
-            </tr>
-        </thead>
-        <tbody><tr>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody><tr>
                     <td>
                         <a href="../testsuite.html?file=https://w3c.github.io/publ-tests/publication_manifest/manifest_processing/tests/index.json&amp;testId=m4.01">
                             m4.01
@@ -142,8 +156,8 @@
                             m4.4.05
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -295,8 +309,8 @@
                             m4.7.1.5.03
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -322,8 +336,8 @@
                             m4.7.1.6.02
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -331,8 +345,8 @@
                             m4.7.1.6.03
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -403,8 +417,8 @@
                             m4.7.1.11.02
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -502,8 +516,8 @@
                             m4.7.2.3.03
                         </a>
                     </td>
-                    <td class="passed">
-                        Pass
+                    <td class="failed">
+                        Fail
                     </td>
                 </tr><tr>
                     <td>
@@ -511,8 +525,8 @@
                             m4.7.2.3.04
                         </a>
                     </td>
-                    <td class="passed">
-                        Pass
+                    <td class="failed">
+                        Fail
                     </td>
                 </tr><tr>
                     <td>
@@ -556,8 +570,8 @@
                             m4.7.3.2.02
                         </a>
                     </td>
-                    <td class="passed">
-                        Pass
+                    <td class="failed">
+                        Fail
                     </td>
                 </tr><tr>
                     <td>
@@ -610,8 +624,8 @@
                             m4.8.1.3.02
                         </a>
                     </td>
-                    <td class="failed">
-                        Fail
+                    <td class="passed">
+                        Pass
                     </td>
                 </tr><tr>
                     <td>
@@ -695,9 +709,93 @@
                         Fail
                     </td>
                 </tr></tbody>
-    </table>
-
+        </table>
+        
+        <div id="jsonReport">
+            <button>Copy JSON report</button>
+            <pre><code class="json hljs">{
+<span class="hljs-attr">"$name"</span>: <span class="hljs-string">"audiobooks-js"</span>,
+<span class="hljs-attr">"$description"</span>: <span class="hljs-string">"Audiobooks parser"</span>,
+<span class="hljs-attr">"$href"</span>: <span class="hljs-string">"https://marisademeglio.github.io/audiobooks-js"</span>,
+<span class="hljs-attr">"m4.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.2.5.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.2.5.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.2.5.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.3.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.3.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.4.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.4.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.4.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.4.04"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.4.05"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.5.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.5.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.6.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.6.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.6.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.1.01"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.1.2.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.2.02"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.1.2.03"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.1.3.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.3.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.3.03"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.1.4.01"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.1.4.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.5.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.5.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.5.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.5.04"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.6.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.6.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.6.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.6.04"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.7.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.7.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.9.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.9.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.10.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.11.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.11.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.1.11.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.1.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.1.02"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.1.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.1.04"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.2.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.2.02"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.2.03"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.3.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.3.02"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.3.03"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.3.04"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.3.05"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.2.3.06"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.2.3.07"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.7.3.2.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.7.3.2.02"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m4.8.1.1.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.8.1.1.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.8.1.1.03"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.8.1.2.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.8.1.3.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m4.8.1.3.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m5.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m5.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m6.01"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m6.02"</span>: <span class="hljs-literal">true</span>,
+<span class="hljs-attr">"m6.03"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m6.04"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m6.05"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m6.06"</span>: <span class="hljs-literal">false</span>,
+<span class="hljs-attr">"m6.07"</span>: <span class="hljs-literal">false</span>
+}</code></pre>
+        </div>
+    </div>
     <script>
+        document.querySelector("#jsonReport button").addEventListener("click", e => {
+            navigator.clipboard.writeText(document.querySelector("#jsonReport code").textContent);
+        });
         let urlSearchParams = new URLSearchParams(document.location.search);
         if (urlSearchParams.has("testsuiteName")) {
             document.querySelector("#testsuite").textContent = urlSearchParams.get("testsuiteName");
@@ -724,12 +822,26 @@
             
             document.querySelector("#number-passed span").textContent = 
                 data.filter(d => d.passed).length;
-            
+                
             document.querySelector("#number-failed span").textContent = 
                 data.filter(d => !d.passed).length;
             if (data.filter(d => !d.passed).length == 0) {
                 document.querySelector("#number-failed").classList.add('nonefailed');
             }
+            formatJsonReport(data);
+        }
+        document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+        });
+        
+        function formatJsonReport(jsonData) {
+            let reportData = {
+                "$name": "audiobooks-js",
+                "$description": "Audiobooks parser",
+                "$href": "https://marisademeglio.github.io/audiobooks-js"
+            };
+            jsonData.map(d => reportData[d.id] = d.passed);
+            document.querySelector("#jsonReport code").textContent = JSON.stringify(reportData, null, 2);
         }
         
     </script>

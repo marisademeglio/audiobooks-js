@@ -9,9 +9,10 @@
         </style>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-        <script src="../build/audiobooks-js.min.js" type="module"></script>
+        <script src="../build/audiobooks.js" type="module"></script>
+        <script src="../lib/moment.js"></script>
         <script type="module">
-            import { Manifest } from '../build/audiobooks-js.min.js';
+            import { Manifest } from '../build/audiobooks.js';
             var manifest;
             document.addEventListener("DOMContentLoaded", () => {
                 let inputFile = new URL("pub/manifest.json", document.location.href).href;
@@ -20,7 +21,7 @@
                 manifest = new Manifest();
                 // do a little setup
                 manifest.setSupportedProfiles([{
-                    id: "https://example.com/publication/",
+                    id: "https://www.w3.org/TR/pub-manifest/",
                     encodingFormats: ['text/html']
                 },
                 {

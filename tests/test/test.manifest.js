@@ -34,7 +34,7 @@ describe(`audiobooks-js general tests`, function() {
         it('Gets the cover', async function() {
             let manifest = await loadManifest(filename);   
             expect(manifest.getCover().url).to.equal(new URL('images/cover.jpg', manifest.data.base).href) ;
-        })
+        });
     });
     describe('Get toc resource (manifest-toc.json)', function() {
         let filename = 'manifests/manifest-toc.json';
@@ -55,6 +55,7 @@ describe(`audiobooks-js general tests`, function() {
             )
         });
     });
+    
     describe('Creates a toc resource if there is none (manifest-audiobook-missing-toc.json)', function() {
         let filename = 'manifests/manifest-audiobook-missing-toc.json';
         it('Does not have an html toc', async function() {
@@ -72,6 +73,26 @@ describe(`audiobooks-js general tests`, function() {
                     "name": "Part 1, Sections 4 - 5"
                 }
             ]);
+        });
+    });
+
+    describe('Is case-insensitive (manifest-case-insensitive-rel.json)', function() {
+        let filename = 'manifests/manifest-case-insensitive-rel.json';
+        it('Gets the cover', async function() {
+            let manifest = await loadManifest(filename);   
+            expect(manifest.getCover().url).to.equal(new URL('images/cover.jpg', manifest.data.base).href) ;
+        });
+        it('Gets the toc', async function() {
+            let manifest = await loadManifest(filename);
+                expect(manifest.getToc()).to.deep.equal(
+                {
+                    rel: ["contents"],
+                    url: new URL("html/toc.html", manifest.data.base).href,
+                    originalUrl: 'html/toc.html',
+                    type: ["LinkedResource"],
+                    encodingFormat: "text/html"
+                }
+            )
         });
     });
      

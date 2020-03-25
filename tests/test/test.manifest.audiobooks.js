@@ -97,7 +97,7 @@ describe(`audiobooks-js audiobooks spec tests`, function() {
         it('Reports an invalid duration value and removes it', async function() {
             let manifest = await loadManifest(filename);
             expectError(manifest.errors, "validation", 
-                'Reading order item http://www.archive.org/download/flatland_rg_librivox/flatland_2_abbott.mp3 has invalid value for property "duration" *PTxyzS*');
+                'Linked resource item http://www.archive.org/download/flatland_rg_librivox/flatland_2_abbott.mp3 has invalid value for property "duration" *PTxyzS*');
             let item = manifest.updateCurrentReadingOrderIndex("http://www.archive.org/download/flatland_rg_librivox/flatland_2_abbott.mp3");
             expect(item.hasOwnProperty('duration')).to.equal(false);
         });

@@ -26,7 +26,7 @@ class Manifest {
         };
         this.readingOrderIndex = 0;
         this.toc = false;
-        this.version = "0.2.0";
+        this.version = "0.2.1";
     }
     
     setSupportedProfiles(supportedProfiles) {

@@ -19,9 +19,10 @@ PRs welcome!
 * [Working example](https://marisademeglio.github.io/audiobooks-js/example): Try it
 * [Run the tests](https://marisademeglio.github.io/audiobooks-js/tests/run-tests.html): Try it!
     * _Two of them fail currently because of differences between servers used in testing (local vs github)_
+    * _A duration test fails because `audiobooks-js` is more permissive and allows durations like `00:33:11`
 * [Run the W3C publ-tests](https://marisademeglio.github.io/audiobooks-js/official-tests): Try them!! (It doesn't affect anything)
     * [Audiobooks manifest processing test results](https://marisademeglio.github.io/audiobooks-js/official-tests/results/audiobooks.html) as of 22 March 2020
-    * [Publication manifest processing test results](https://marisademeglio.github.io/audiobooks-js/official-tests/results/pubmanifest.html) as of 22 March 2020
+    * [Publication manifest processing test results](https://marisademeglio.github.io/audiobooks-js/official-tests/results/pubmanifest-march-25.html) as of 25 March 2020
 
 To run anything locally (examples, tests), first start a web server, e.g. `npx http-serve -c-1`.
 

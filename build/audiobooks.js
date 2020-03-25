@@ -66,26 +66,24 @@ function isValidDuration(val) {
     if (typeof val != "string") {
         return false;
     }
-    if (val.length < 4) {
-        return false;
-    }
-    if (val.substr(0, 2) != 'PT') {
-        return false;
-    }
-    if (val[val.length - 1] != 'S') {
-        return false;
-    }
-    let res = parseInt(val.substr(2, val.length-3));
-    return !isNaN(res);
-}
-function getDuration(val) {
-    if (isValidDuration(val)) {
-        let res = parseInt(val.substr(2, val.length-3));
-        return !isNaN(res) ? res : -1;
-    }
-    return -1;
-}
+    // if (val.length < 4) {
+    //     return false;
+    // }
+    // if (val.substr(0, 2) != 'PT') {
+    //     return false;
+    // }
+    // if (val[val.length - 1] != 'S' && val[val.length - 1] != 'M') {
+    //     return false;
+    // }
+    // let res = parseInt(val.substr(2, val.length-3));
+    // return !isNaN(res);
 
+    // just check that it is nonzero
+    return moment.duration(val).asMilliseconds() != 0;
+}
+function getDurationInSeconds(val) {
+    return moment.duration(val).asSeconds();
+}
 function isValidDate(val) {
     let re = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
     let res =  re.test(val);
@@ -184,7 +182,7 @@ function normalizeData(term, value, lang, dir, base) {
                     return null;
                 }
             });
-            entities = entities.filter(e => e!=null);
+            entities = entities.filter(e => e!=null && e.hasOwnProperty("name"));
             return {
                 success: true,
                 value: entities
@@ -311,11 +309,12 @@ const AUDIO_REQUIRED_PROPERTIES = ["abridged", "accessMode", "accessModeSufficie
 
 const AUDIOBOOKS_PROFILE = "https://www.w3.org/TR/audiobooks/";        
 
+let errors = [];
+
 function dataValidation(processed) {
 
     let processed_ = processed;
-    let errors = [];
-
+    errors = [];    
     Object.keys(processed_).map(key => {
         let retval = globalDataCheck(key, processed_[key]);
         {
@@ -398,6 +397,7 @@ function dataValidation(processed) {
     processed_.uniqueResources = Array.from(new Set(urls));
 
     if (processed_.hasOwnProperty('links')) {
+        processed_.links = lowerCaseRel(processed_.links);
         let keepLinks = processed_.links.filter(item => {
             if (!item.hasOwnProperty('rel') || item.rel.length == 0) {
                 errors.push({severity: "validation", msg: `Link missing property "rel" *${item.url}*`});
@@ -419,11 +419,14 @@ function dataValidation(processed) {
 
     let resources = [];
     if (processed_.hasOwnProperty('readingOrder')) {
+        processed_.readingOrder = lowerCaseRel(processed_.readingOrder);
         resources = processed_.readingOrder;
     }
     if (processed_.hasOwnProperty('resources')) {
+        processed_.resources = lowerCaseRel(processed_.resources);
         resources = resources.concat(processed_.resources);
     }
+    
     if (resources.filter(item => item.hasOwnProperty("rel") && item.rel.includes("contents")).length > 1) {
         errors.push({severity: "validation", msg: "Multiple resources with rel=contents"});
     }
@@ -436,6 +439,16 @@ function dataValidation(processed) {
     resources.filter(item => item.hasOwnProperty("rel") && item.rel.includes("cover") 
         && isImageFormat(item.encodingFormat) && !item.hasOwnProperty('name')).map(item => 
         errors.push({severity: "validation", msg: `All image covers must have a "name" property`}));
+    
+    if (processed_.hasOwnProperty('readingOrder')) {
+        processed_.readingOrder = validateDurations(processed_.readingOrder);
+    }
+    if (processed_.hasOwnProperty('links')) {
+        processed_.links = validateDurations(processed_.links);
+    }
+    if (processed_.hasOwnProperty('resources')) {
+        processed_.resources = validateDurations(processed_.resources);
+    }
     
     removeEmptyArrays(processed_);
 
@@ -496,39 +509,60 @@ function audiobooksDataValidation(processed) {
     if (!cover) {
         errors.push({severity: 'validation', msg: 'Missing "cover" resource'});
     }
-    
-    // check durations
+
+    // check that reading order duration is present
     if (processed_.readingOrder) {
         processed_.readingOrder.map(item => {
             if (!item.hasOwnProperty('duration')) {
                 errors.push({severity: 'validation', 
                     msg: `Reading order item ${item.url} missing property "duration"`});
             }
-            else if (!isValidDuration(item.duration)) {
-                errors.push({severity: 'validation', 
-                    msg: `Reading order item ${item.url} has invalid value for property "duration" *${item.duration}*`});
-                delete item.duration;
-            }
         });
     }
-
     if (!processed_.hasOwnProperty('duration')) {
         errors.push({severity: "validation", msg: 'Missing property "duration"'});
     }
     else {
         let totalDuration = processed_.readingOrder.reduce((acc, curr) => {
             if (curr.hasOwnProperty('duration')) {
-                acc+= getDuration(curr.duration);
+                acc+= getDurationInSeconds(curr.duration);
             }
             return acc;
         }, 0);
 
-        let correctDuration = `PT${totalDuration.toString()}S`;
-        if (correctDuration != processed_.duration) {
+        if (totalDuration != getDurationInSeconds(processed_.duration)) {
             errors.push({severity: "validation", msg: 'Incorrect value for top-level property "duration"'});
         }
     }
     return {"data": processed_, errors};
+}
+
+function lowerCaseRel(linkedResources) {
+    let output = linkedResources.map(item => 
+        item.hasOwnProperty('rel') ? 
+            ({...item, rel: item.rel.map(r => r.toLowerCase())}) : item);
+    return output;
+}
+
+function validateDurations(linkedResourcesArr) {
+    let linkedResourcesArr_ = linkedResourcesArr.map(item => {
+        if (item.hasOwnProperty('duration')) {
+            if (!isValidDuration(item.duration)) {
+                errors.push({severity: 'validation', 
+                    msg: `Linked resource item ${item.url} has invalid value for property "duration" *${item.duration}*`});
+                let item_ = item;
+                delete item_.duration;
+                return item_;
+            }
+            else {
+                return item;
+            }
+        }
+        else {
+            return item;
+        }
+    });
+    return linkedResourcesArr_;
 }
 
 const AUDIOBOOKS_PROFILE$1 = "https://www.w3.org/TR/audiobooks/";
@@ -550,12 +584,7 @@ class ManifestProcessor {
        // set to an array of profiles (described above)
         this.supportedProfiles =[];
         
-        // set to default values
-        this.defaults = {
-            lang: '',
-            dir: '',
-            title: ''
-        };
+        this.defaults = {};
         
         this._readingOrderItems = [];
     }
@@ -660,7 +689,10 @@ class ManifestProcessor {
 
     setGlobalLangAndDir() {
         let contexts = this.json['@context'].filter(item => item instanceof Object);
+        this.processed.lang = '';
+        this.processed.dir = '';
         contexts.map(context => {
+            
             if (context.hasOwnProperty('language')) {
                 this.processed.lang = context.language;
             }
@@ -668,18 +700,18 @@ class ManifestProcessor {
                 this.processed.dir = context.direction;
             }
         });
-        if (!isValidLanguageTag(this.processed.lang)) {
+        if (this.processed.lang != '' && !isValidLanguageTag(this.processed.lang)) {
             this.errors.push({severity: 'validation', msg: `Invalid language tag *${this.processed.lang}*`});
             this.processed.lang = '';
         }
-        if (['rtl', 'ltr'].includes(this.processed.dir) == false) {
+        if (this.processed.dir != '' && ['rtl', 'ltr'].includes(this.processed.dir) == false) {
             this.errors.push({severity: 'validation', msg: `Invalid direction value *${this.processed.dir}*`});
             this.processed.dir = '';
         }
-        if (this.processed.lang == '') {
+        if (this.processed.lang == '' && this.defaults.hasOwnProperty('lang')) {
             this.processed.lang = this.defaults.lang;
         }
-        if (this.processed.dir == '') {
+        if (this.processed.dir == '' && this.defaults.hasOwnProperty('dir')) {
             this.processed.dir = this.defaults.dir;
         }
     }
@@ -709,7 +741,13 @@ class ManifestProcessor {
                 }
             }
             else {
-                throw 'Could not determine profile';
+                if (this.defaults.hasOwnProperty('profile')) {
+                    this.processed.profile = this.defaults.profile;
+                    this.errors.push({severity: "validation", msg: 'Conformance statement missing; using default profile'});
+                }
+                else {
+                    throw "Could not determine profile, and no default profile was set."
+                }
             }
         }   
     }
@@ -737,15 +775,15 @@ class ManifestProcessor {
     // https://www.w3.org/TR/audiobooks/#audio-manifest-processing
     async audiobooksProcessing() {
         // check for TOC
-        let toc = this.processed.resources.find(r => r.rel ? r.rel.includes("contents") : false);
-        if (toc != undefined) {
-            let tocFile = await fetchFile(toc.url);
-            const parser = new DOMParser();
-            const tocDoc = parser.parseFromString(tocFile, "text/html");
-            this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
-        }
-        else {
-            this.processed.toc = false;
+        this.processed.toc = false;
+        if (this.processed.hasOwnProperty('resources')) {
+            let toc = this.processed.resources.find(r => r.rel ? r.rel.includes("contents") : false);
+            if (toc != undefined) {
+                let tocFile = await fetchFile(toc.url);
+                const parser = new DOMParser();
+                const tocDoc = parser.parseFromString(tocFile, "text/html");
+                this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
+            }
         }
         if (!this.processed.toc) {
             this.errors.push({severity: "validation", msg: 'No HTML table of contents found'});
@@ -778,7 +816,7 @@ class Manifest {
         };
         this.readingOrderIndex = 0;
         this.toc = false;
-        this.version = "0.2.0";
+        this.version = "0.2.1";
     }
     
     setSupportedProfiles(supportedProfiles) {
