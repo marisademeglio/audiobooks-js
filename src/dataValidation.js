@@ -6,11 +6,12 @@ const AUDIOBOOKS_PROFILE = "https://www.w3.org/TR/audiobooks/";
 
 import { isValidDuration, isAudioFormat, isValidLanguageTag, isValidDate, isImageFormat, getDurationInSeconds } from './utils.js';
 
+let errors = [];
+
 function dataValidation(processed) {
 
     let processed_ = processed;
-    let errors = [];
-
+    errors = [];    
     Object.keys(processed_).map(key => {
         let retval = globalDataCheck(key, processed_[key]);
         if (retval.success) {
@@ -93,6 +94,7 @@ function dataValidation(processed) {
     processed_.uniqueResources = Array.from(new Set(urls));
 
     if (processed_.hasOwnProperty('links')) {
+        processed_.links = lowerCaseRel(processed_.links);
         let keepLinks = processed_.links.filter(item => {
             if (!item.hasOwnProperty('rel') || item.rel.length == 0) {
                 errors.push({severity: "validation", msg: `Link missing property "rel" *${item.url}*`});
@@ -114,11 +116,14 @@ function dataValidation(processed) {
 
     let resources = [];
     if (processed_.hasOwnProperty('readingOrder')) {
+        processed_.readingOrder = lowerCaseRel(processed_.readingOrder);
         resources = processed_.readingOrder;
     }
     if (processed_.hasOwnProperty('resources')) {
+        processed_.resources = lowerCaseRel(processed_.resources);
         resources = resources.concat(processed_.resources);
     }
+    
     if (resources.filter(item => item.hasOwnProperty("rel") && item.rel.includes("contents")).length > 1) {
         errors.push({severity: "validation", msg: "Multiple resources with rel=contents"});
     }
@@ -131,6 +136,16 @@ function dataValidation(processed) {
     resources.filter(item => item.hasOwnProperty("rel") && item.rel.includes("cover") 
         && isImageFormat(item.encodingFormat) && !item.hasOwnProperty('name')).map(item => 
         errors.push({severity: "validation", msg: `All image covers must have a "name" property`}));
+    
+    if (processed_.hasOwnProperty('readingOrder')) {
+        processed_.readingOrder = validateDurations(processed_.readingOrder);
+    }
+    if (processed_.hasOwnProperty('links')) {
+        processed_.links = validateDurations(processed_.links);
+    }
+    if (processed_.hasOwnProperty('resources')) {
+        processed_.resources = validateDurations(processed_.resources);
+    }
     
     removeEmptyArrays(processed_);
 
@@ -191,22 +206,16 @@ function audiobooksDataValidation(processed) {
     if (!cover) {
         errors.push({severity: 'validation', msg: 'Missing "cover" resource'});
     }
-    
-    // check durations
+
+    // check that reading order duration is present
     if (processed_.readingOrder) {
         processed_.readingOrder.map(item => {
             if (!item.hasOwnProperty('duration')) {
                 errors.push({severity: 'validation', 
                     msg: `Reading order item ${item.url} missing property "duration"`});
             }
-            else if (!isValidDuration(item.duration)) {
-                errors.push({severity: 'validation', 
-                    msg: `Reading order item ${item.url} has invalid value for property "duration" *${item.duration}*`});
-                delete item.duration;
-            }
         });
     }
-
     if (!processed_.hasOwnProperty('duration')) {
         errors.push({severity: "validation", msg: 'Missing property "duration"'})
     }
@@ -225,4 +234,31 @@ function audiobooksDataValidation(processed) {
     return {"data": processed_, errors};
 }
 
+function lowerCaseRel(linkedResources) {
+    let output = linkedResources.map(item => 
+        item.hasOwnProperty('rel') ? 
+            ({...item, rel: item.rel.map(r => r.toLowerCase())}) : item);
+    return output;
+}
+
+function validateDurations(linkedResourcesArr) {
+    let linkedResourcesArr_ = linkedResourcesArr.map(item => {
+        if (item.hasOwnProperty('duration')) {
+            if (!isValidDuration(item.duration)) {
+                errors.push({severity: 'validation', 
+                    msg: `Linked resource item ${item.url} has invalid value for property "duration" *${item.duration}*`});
+                let item_ = item;
+                delete item_.duration;
+                return item_;
+            }
+            else {
+                return item;
+            }
+        }
+        else {
+            return item;
+        }
+    });
+    return linkedResourcesArr_;
+}
 export {dataValidation};
