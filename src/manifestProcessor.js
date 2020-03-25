@@ -21,12 +21,7 @@ class ManifestProcessor {
        // set to an array of profiles (described above)
         this.supportedProfiles =[];
         
-        // set to default values
-        this.defaults = {
-            lang: '',
-            dir: '',
-            title: ''
-        };
+        this.defaults = {};
         
         this._readingOrderItems = [];
     }
@@ -131,7 +126,10 @@ class ManifestProcessor {
 
     setGlobalLangAndDir() {
         let contexts = this.json['@context'].filter(item => item instanceof Object);
+        this.processed.lang = '';
+        this.processed.dir = '';
         contexts.map(context => {
+            
             if (context.hasOwnProperty('language')) {
                 this.processed.lang = context.language;
             }
@@ -139,18 +137,18 @@ class ManifestProcessor {
                 this.processed.dir = context.direction;
             }
         });
-        if (!isValidLanguageTag(this.processed.lang)) {
+        if (this.processed.lang != '' && !isValidLanguageTag(this.processed.lang)) {
             this.errors.push({severity: 'validation', msg: `Invalid language tag *${this.processed.lang}*`});
             this.processed.lang = '';
         }
-        if (['rtl', 'ltr'].includes(this.processed.dir) == false) {
+        if (this.processed.dir != '' && ['rtl', 'ltr'].includes(this.processed.dir) == false) {
             this.errors.push({severity: 'validation', msg: `Invalid direction value *${this.processed.dir}*`});
             this.processed.dir = '';
         }
-        if (this.processed.lang == '') {
+        if (this.processed.lang == '' && this.defaults.hasOwnProperty('lang')) {
             this.processed.lang = this.defaults.lang;
         }
-        if (this.processed.dir == '') {
+        if (this.processed.dir == '' && this.defaults.hasOwnProperty('dir')) {
             this.processed.dir = this.defaults.dir;
         }
     }
@@ -180,7 +178,13 @@ class ManifestProcessor {
                 }
             }
             else {
-                throw 'Could not determine profile';
+                if (this.defaults.hasOwnProperty('profile')) {
+                    this.processed.profile = this.defaults.profile;
+                    this.errors.push({severity: "validation", msg: 'Conformance statement missing; using default profile'})
+                }
+                else {
+                    throw "Could not determine profile, and no default profile was set."
+                }
             }
         }   
     }
@@ -208,15 +212,15 @@ class ManifestProcessor {
     // https://www.w3.org/TR/audiobooks/#audio-manifest-processing
     async audiobooksProcessing() {
         // check for TOC
-        let toc = this.processed.resources.find(r => r.rel ? r.rel.includes("contents") : false);
-        if (toc != undefined) {
-            let tocFile = await fetchFile(toc.url);
-            const parser = new DOMParser();
-            const tocDoc = parser.parseFromString(tocFile, "text/html");
-            this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
-        }
-        else {
-            this.processed.toc = false;
+        this.processed.toc = false;
+        if (this.processed.hasOwnProperty('resources')) {
+            let toc = this.processed.resources.find(r => r.rel ? r.rel.includes("contents") : false);
+            if (toc != undefined) {
+                let tocFile = await fetchFile(toc.url);
+                const parser = new DOMParser();
+                const tocDoc = parser.parseFromString(tocFile, "text/html");
+                this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
+            }
         }
         if (!this.processed.toc) {
             this.errors.push({severity: "validation", msg: 'No HTML table of contents found'})
