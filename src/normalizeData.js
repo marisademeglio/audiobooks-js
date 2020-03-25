@@ -34,7 +34,7 @@ function normalizeData(term, value, lang, dir, base) {
                     return null;
                 }
             });
-            entities = entities.filter(e => e!=null);
+            entities = entities.filter(e => e!=null && e.hasOwnProperty("name"));
             return {
                 success: true,
                 value: entities

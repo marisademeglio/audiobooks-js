@@ -4,7 +4,7 @@ const AUDIO_REQUIRED_PROPERTIES = ["abridged", "accessMode", "accessModeSufficie
 
 const AUDIOBOOKS_PROFILE = "https://www.w3.org/TR/audiobooks/";        
 
-import { isValidDuration, isAudioFormat, getDuration, isValidLanguageTag, isValidDate, isImageFormat } from './utils.js';
+import { isValidDuration, isAudioFormat, isValidLanguageTag, isValidDate, isImageFormat, getDurationInSeconds } from './utils.js';
 
 function dataValidation(processed) {
 
@@ -213,13 +213,12 @@ function audiobooksDataValidation(processed) {
     else {
         let totalDuration = processed_.readingOrder.reduce((acc, curr) => {
             if (curr.hasOwnProperty('duration')) {
-                acc+= getDuration(curr.duration);
+                acc+= getDurationInSeconds(curr.duration);
             }
             return acc;
         }, 0);
 
-        let correctDuration = `PT${totalDuration.toString()}S`;
-        if (correctDuration != processed_.duration) {
+        if (totalDuration != getDurationInSeconds(processed_.duration)) {
             errors.push({severity: "validation", msg: 'Incorrect value for top-level property "duration"'});
         }
     }

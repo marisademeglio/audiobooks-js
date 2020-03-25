@@ -1,3 +1,4 @@
+
 // most common web audio mimetypes
 // https://caniuse.com/#feat=audio
 const AUDIOMIMES = 
@@ -66,29 +67,27 @@ function isValidDuration(val) {
     if (typeof val != "string") {
         return false;
     }
-    if (val.length < 4) {
-        return false;
-    }
-    if (val.substr(0, 2) != 'PT') {
-        return false;
-    }
-    if (val[val.length - 1] != 'S') {
-        return false;
-    }
-    let res = parseInt(val.substr(2, val.length-3));
-    return !isNaN(res);
-}
-function getDuration(val) {
-    if (isValidDuration(val)) {
-        let res = parseInt(val.substr(2, val.length-3));
-        return !isNaN(res) ? res : -1;
-    }
-    return -1;
-}
+    // if (val.length < 4) {
+    //     return false;
+    // }
+    // if (val.substr(0, 2) != 'PT') {
+    //     return false;
+    // }
+    // if (val[val.length - 1] != 'S' && val[val.length - 1] != 'M') {
+    //     return false;
+    // }
+    // let res = parseInt(val.substr(2, val.length-3));
+    // return !isNaN(res);
 
+    // just check that it is nonzero
+    return moment.duration(val).asMilliseconds() != 0;
+}
+function getDurationInSeconds(val) {
+    return moment.duration(val).asSeconds();
+}
 function isValidDate(val) {
     let re = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
     let res =  re.test(val);
     return res;
 }
-export { fetchFile, fetchContentType, isValidLanguageTag, isAudioFormat, isImageFormat, isValidDuration, getDuration, isValidDate };
+export { fetchFile, fetchContentType, isValidLanguageTag, isAudioFormat, isImageFormat, isValidDuration, isValidDate, getDurationInSeconds };
