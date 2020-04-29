@@ -4,6 +4,7 @@
         "https://www.w3.org/ns/pub-context",
         {"language" : "en", "direction": "ltr"}
     ],
+    "name": "Moby Dick",
     "conformsTo": "https://example.com/publication/",
     "type": "Book",
     "url": "https://publisher.example.org/mobydick",

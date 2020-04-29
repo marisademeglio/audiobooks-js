@@ -68,7 +68,7 @@ async function loadManifestJson(filename) {
 }
 
 function expectError(errors, severity, msg) {
-    let err = errors.find(e=>e.severity === severity && e.msg === msg);
+    let err = errors.find(e=>e.severity === severity && e.msg.indexOf(msg) != -1);
     expect(err).to.not.be.undefined;
 }
 

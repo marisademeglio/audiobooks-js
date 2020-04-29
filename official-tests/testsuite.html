@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Publ-tests runner</title>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <style>
             html {
                 height: 100%;
@@ -11,263 +12,168 @@
             }
             main {
                 display: grid;
-                grid-template-areas: 
-                "section section"
-                "test answer";
-                grid-template-columns: 70% auto;
-                grid-template-rows: 15vh auto;
+                grid-template-columns: 50% auto;
             }
-            #section-info {
-                grid-area: section;
-            }
+            
             tr > * {
                 text-align: left;
             }
-            td:last-child{
-                padding-left: 4rem;
+            
+            td {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
             }
-            #test {
-                grid-area: test;
+            td:not(:first-child), th:not(:first-child) {
+                padding-left: 2rem;
             }
-            #test h3 code {
-                font-size: larger;
-                background-color: lightgray;
+            td:nth-child(1), th:nth-child(1) {
+                width: 5rem;
             }
-            #test h3 {
-                margin-top: 0;
+            td:nth-child(2), th:nth-child(2) {
+                width: 30rem;
             }
-            #answer {
-                grid-area: answer;
-                width: 20%;
-                display: flex;
+            #results p {
+                font-size: x-large;
             }
-            #answer button {
-                border-radius: 4px;
-                cursor: pointer;
-                height: min-content;
-                align-self: top;
+            #score {
+                color: green;
+                font-weight: bold;
             }
-            #pass {
-                border: green thick solid;
-
-            }
-            #fail {
-                border: red thick solid;
-                margin-left: auto;
-            }
-            .disabled {
-                display: none !important;
+            #unanswered {
+                color: red;
+                font-weight: bold;
             }
             .alert {
                 background-color: lightyellow;
                 border: yellow thin solid;
             }
         </style>
+
     </head>
     <body>
         <header>
-            <h1>Library: <a href="https://marisademeglio.github.io/audiobooks-js/"><code>audiobooks-js</code></a>
-            <br/>
-            Testsuite: <a id="testsuite-name"></a> (<span id="testsuite-date"></span>)</h1>
+            <h1>Testsuite: <a id="testsuite-name"></a> (<span id="testsuite-date"></span>)</h1>
             
         </header>
         <main>
-            <div id="section-info">
-                <h2>Section: </h2>
-                <p><a id="section-name"></a></p>
-            </div>
-            
-            <div id="test">
-                <h3>Test: <code id="test-id"></code></h3>
-                <p id="standalone"><a href="">Run test as standalone</a></p>
-                <table id="test-info" summary="test information">
-                    <tr>
-                        <th>Test file:</th>
-                        <td><a id="test-file"></a></td>
-                    </tr>
-                    <tr>
-                        <th>Description:</th>
-                        <td id="test-description"></td>
-                    </tr>
-                    <tr>
-                        <th>Actions:</th>
-                        <td id="test-actions"></td>
-                    </tr>
-                    <tr>
-                        <th>Errors:</th>
-                        <td id="test-errors"></td>
-                    </tr>
-                    <tr>
-                        <th>Media type:</th>
-                        <td id="test-mediatype"></td>
-                    </tr>
-                </table>
+            <div id="tests-table">
                 
-                <h4>Manifest processing results after running <a href="https://marisademeglio.github.io/audiobooks-js/"><code>audiobooks-js</code></a>:</h4>
-                <div id="errors">
-                    <h5>Errors:</h5>
-                    <p></p>
-                    <pre><code class="json"></code></pre> 
-                </div>
-                <div id="processed">
-                    <h5>Processed manifest:</h5>
-                    <pre><code class="json"></code></pre> 
-                </div>
-                
-            </div>
-            <div id="answer">
-                <button id="pass">Pass</button>
-                <button id="fail">Fail</button>
-            </div>
-            
-            <div id="done" class="disabled">
-                <p>Done!</p>
-                <p><a>Show results</a></p>
-            </div>
-        </main>
-        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
-        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-        <script src="../lib/moment.js"></script>
-        <script src="../build/audiobooks.js" type="module"></script>
-        <script type="module">
-            import { Manifest } from '../build/audiobooks.js';
-            
-            // load the testsuite file
-            let urlSearchParams = new URLSearchParams(document.location.search);
-            let base;
-            let items = [];
-            let idx = 0;
-            let answers = [];
-            document.querySelector("#pass").addEventListener("click", e => {
-                recordResult(true);
-                next();
-            });
-            document.querySelector("#fail").addEventListener("click", e => {
-                recordResult(false);
-                next();
-            });
-            
 
+            </div>
+            <div id="results">
+                <h2>Results</h2>
+                <p><span id="score"></span> passed</p>
+                <p><span id="unanswered"></span> unanswered</p>
+
+                <div id="jsonReport">
+                    <button>Copy JSON report</button>
+                    <pre><code class="json"></code></pre>
+                </div>
+            </div>
+            
+        </main>
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+        <script type="module">
+            
+            let answers = [];
+            let allTestIds = [];
+            let base = '';
+
+            document.querySelector("#jsonReport button").addEventListener("click", e => {
+                navigator.clipboard.writeText(document.querySelector("#jsonReport code").textContent);
+            });
+            document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+            });
+            
+            let urlSearchParams = new URLSearchParams(document.location.search);
             if (urlSearchParams.has("file")) {
                 base = urlSearchParams.get("file");
                 open(urlSearchParams.get("file"));
             }
+
             async function open(file) {
+                
                 let indexFile = await fetch(file);
                 let text = await indexFile.text();
                 let json = JSON.parse(text);
+                document.title = `${document.title}: ${json.title} (${json.date})`;
                 document.querySelector("#testsuite-name").textContent = json.title;
                 document.querySelector("#testsuite-name").setAttribute("href", json.href);
                 document.querySelector("#testsuite-date").textContent = json.date;
+                document.querySelector('#tests-table').innerHTML = 
+                    `<p>Click "run test" to run the test in a separate window with <a href="https://marisademeglio.github.io/audiobooks-js/"><code>audiobooks-js</code></a>.</p>`
+                    + 
+                    json.tests.map(testSection => 
+                    `<h2><a href="${testSection.href}">${testSection.section}</a></h2>
+                    <table>
+                        <thead>
+                            <th>Test ID</th>
+                            <th>Description</th>
+                            <th>Run test</th>
+                            <th id="result-header">Result</th>
+                            <th>Issue</th>
+                        </thead>
+                        <tbody>
+                            ${testSection.tests.map(test => `<tr>
+                                <td>${test.id}</td>
+                                <td>${test.description}</td>
+                                <td><a href="test.html?file=${file}&testId=${test.id}" target="_blank">Run test</a></td>
+                                <td class="result">
+                                    <input type="radio" id="${test.id}-result-pass" name="${test.id}-result">
+                                    <label for="${test.id}-result-pass">Pass</label>
+                                    <input type="radio" id="${test.id}-result-fail" name="${test.id}-result">
+                                    <label for="${test.id}-result-fail">Fail</label>
+                                </td>
+                                <td><input type="checkbox"></td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>`
+                ).join('');
 
-                // flatten the list
-                items = json.tests.map(testSection => 
+                // flat list of all test IDs
+                allTestIds = json.tests.map(testSection => 
                     testSection.tests.map(test => 
                         ({...test, section: testSection.section, sectionHref: testSection.href})
                     )
                 )
                 .reduce((acc, curr) => acc.concat(curr), []);
 
-                // you can pass the test ID in the URL params but
-                // it disables the ability to accumulate answers
-                if (urlSearchParams.has("testId")) {
-                    let testId = urlSearchParams.get("testId");
-                    idx = items.findIndex(t => t.id === testId);
-                    document.querySelector("#answer").classList.add("disabled");
-                    document.querySelector("#standalone").classList.add("disabled");
-                    let p = document.createElement("p");
-                    p.classList.add("alert");
-                    p.innerHTML = `Running only test <code>${testId}</code>. Scoring disabled.`;
-                    document.querySelector("header").appendChild(p);
-                    document.title = document.title + `: ${testId}`;
-                }
-                loadTest(items[idx]);
-                
-            }
-            async function next() {
-                idx++;
-                if (idx + 1 == items.length ) {
-                    showResults();
-                }
-                else {
-                    loadTest(items[idx]);
-                }
-                
-            }
-            async function loadTest(test) {
-                
-                document.querySelector("#section-name").textContent = test.section;
-                document.querySelector("#section-name").setAttribute("href", test.sectionHref);
-                
-                let ext = test['media-type'] === 'text/html' ? 'html' : 'jsonld';
-                let testFile = `test_${test.id}.${ext}`;
-                let testUrl = new URL(testFile, base);
+                updateStats();
 
-                document.querySelector("#test-id").textContent = test.id;
-                document.querySelector("#test-description").textContent = test.description;
-                document.querySelector("#test-actions").textContent = test.actions;
-                document.querySelector("#test-errors").textContent = test.errors;
-                document.querySelector("#test-mediatype").textContent = test['media-type'];
-
-                document.querySelector("#test-file").innerHTML = `<code>${testFile}</code>`;
-                document.querySelector("#test-file").setAttribute("href", testUrl);
-
-                document.querySelector("#standalone a").setAttribute("href",
-                document.baseURI + `&testId=${test.id}`);
-                
-                let manifest = new Manifest();
-                // do a little setup
-                manifest.setSupportedProfiles([{
-                    id: "https://www.w3.org/TR/pub-manifest/",
-                    encodingFormats: ['text/html']
-                },
-                {
-                    id: "https://www.w3.org/TR/audiobooks/",
-                    encodingFormats: ['audio/mpeg']
-                }]);
-                manifest.setDefaults({
-                    title: 'Publication', 
-                    profile: 'https://www.w3.org/TR/pub-manifest/'}
-                );
-                // load a file
-                await manifest.loadUrl(testUrl);
-                
-                // show the data structure
-                // report any errors
-                if (manifest.errors.length > 0) {
-                    document.querySelector("#errors code").innerHTML = JSON.stringify(manifest.errors, null, 2);
-                    let fatalErrors = manifest.errors.filter(e => e.severity === 'fatal');
-                    let validationErrors = manifest.errors.filter(e => e.severity === 'validation');
-                    document.querySelector("#errors p").textContent = 
-                        `${fatalErrors.length} fatal errors, ${validationErrors.length} validation errors.`;
-                }
-                else {
-                    document.querySelector("#errors code").innerHTML = '';
-                    document.querySelector("#errors p").textContent = '0 fatal errors, 0 validation errors';
-                }
-                document.querySelector("#processed code").innerHTML = JSON.stringify(manifest.data, null, 2);
-                
-                document.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightBlock(block);
-                });
-            }
-
-            function recordResult(passed) {
-                answers.push({id: items[idx].id, passed});
-            }
-
-            function showResults() {
-                let datastring = encodeURI(JSON.stringify(answers));
-                let testsuiteName = encodeURI(document.querySelector("#testsuite-name").textContent);
-                let testsuiteHref = encodeURI(document.querySelector("#testsuite-name").getAttribute("href"));
-                document.querySelector("#section-info").classList.add("disabled");
-                document.querySelector("#test").classList.add("disabled");
-                document.querySelector("#answer").classList.add("disabled");
-                document.querySelector("#done").classList.remove("disabled");
-                document.querySelector("#done a").setAttribute("href", 
-                `results.html?data=${datastring}&testsuiteName=${testsuiteName}&testsuiteHref=${base}`);
+                let resultInputs = Array.from(document.querySelectorAll("td.result input"));
+                resultInputs.map(elm => elm.addEventListener('click', recordResult));
             }
             
+            function recordResult(e) {
+                let split = e.target.id.split('-');
+                let existsIdx = answers.findIndex(item => item.id === split[0]);
+                if (existsIdx > -1) {
+                    answers[existsIdx].passed = split[2] === 'pass';
+                }
+                else {
+                    answers.push({id: split[0], passed: split[2] === 'pass'});    
+                }
+                updateStats();
+                formatJsonReport();
+            }
+
+            function formatJsonReport() {
+                let reportData = {
+                    "name": "audiobooks-js",
+                    "description": "Audiobooks parser",
+                    "href": "https://marisademeglio.github.io/audiobooks-js"
+                };
+                answers.map(a => reportData[a.id] = a.passed);
+                document.querySelector("#jsonReport code").textContent = JSON.stringify(reportData, null, 2);
+            }
+
+            function updateStats() {
+                let passed = answers.filter(a => a.passed);
+                let unanswered = allTestIds.length - answers.length;
+                document.querySelector("#score").textContent = `${passed.length}/${allTestIds.length}`;
+                document.querySelector("#unanswered").textContent = `${unanswered}/${allTestIds.length}`;
+            }
         </script>
     </body>
 </html>
