@@ -16,8 +16,13 @@ const IMAGEMIMES =
 
 async function fetchFile(file) {
     let data = await fetch(file);
-    let text = await data.text();
-    return text;
+    if (data) {
+        let text = await data.text();
+        return text;
+    }
+    else {
+        return null;
+    }
 }
 
 async function fetchContentType(file) {
