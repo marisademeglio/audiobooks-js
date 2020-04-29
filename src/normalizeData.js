@@ -1,16 +1,28 @@
 import {TermDefs} from './termDefs.js';
 
-function normalizeData(term, value, lang, dir, base) {
+let errors = [];
+function normalize(manifest, processed) {
+    errors = [];
+    let processed_ = processed;
+    Object.keys(manifest).map(key => {
+        let retval = normalizeData(key, manifest[key], processed.lang, processed.dir);
+        if (retval.success) {
+            processed_[key] = retval.value;
+        }
+    });
+    return {data: processed_, errors};
+}
+function normalizeData(term, value, lang, dir) {
     if (term == '@context') {
-        return {success: false, value: null};
+        return {success: false, value: null, errors};
     }
-    else if (TermDefs.ARRAY_OF_LITERALS.includes(term)) {
+    if (TermDefs.ARRAY_OF_LITERALS.includes(term)) {
         return {
             success: true, 
             value: typeof value === "string" ? [value] : value
         };
     }
-    else if (TermDefs.ARRAY_OF_ENTITIES.includes(term)) {
+    if (TermDefs.ARRAY_OF_ENTITIES.includes(term)) {
         if (typeof value === "string" || value instanceof Array) {
             let val = typeof value === "string" ? [{name: value}] : value;
 
@@ -34,10 +46,20 @@ function normalizeData(term, value, lang, dir, base) {
                     return null;
                 }
             });
-            entities = entities.filter(e => e!=null && e.hasOwnProperty("name"));
+            let namedEntities = entities.filter(e => e!=null && e.hasOwnProperty("name"));
+            if (namedEntities.length != entities.length) {
+                errors.push({severity: "validation", msg: "Entity missing required property 'name'."});
+            }
+            let i;
+            for (i=0; i<namedEntities.length; i++) {
+                let normName = normalizeData("name", entities[i].name, lang, dir);
+                if (normName.success) {
+                    namedEntities[i].name = normName.value;
+                }
+            }
             return {
                 success: true,
-                value: entities
+                value: namedEntities
             };
         }
         else {
@@ -47,7 +69,7 @@ function normalizeData(term, value, lang, dir, base) {
             };
         }
     }
-    else if (TermDefs.ARRAY_OF_L10N_STRINGS.includes(term)) {
+    if (TermDefs.ARRAY_OF_L10N_STRINGS.includes(term)) {
         if (typeof value === "string" || value instanceof Array) {
             let val = typeof value === "string" ? [{value: value}] : value;
 
@@ -73,6 +95,7 @@ function normalizeData(term, value, lang, dir, base) {
                 }
             });
             entities = entities.filter(e => e!=null);
+
             return {
                 success: true,
                 value: entities
@@ -85,7 +108,7 @@ function normalizeData(term, value, lang, dir, base) {
             };
         }
     }
-    else if (TermDefs.ARRAY_OF_LINKED_RESOURCES.includes(term)) {
+    if (TermDefs.ARRAY_OF_LINKED_RESOURCES.includes(term)) {
         if (typeof value === "string" || value instanceof Array || value instanceof Object) {
             let val = typeof value === "string" ? [{url: value}] : value;
             if (val instanceof Object && !(val instanceof Array)) {
@@ -110,7 +133,7 @@ function normalizeData(term, value, lang, dir, base) {
                         v.originalUrl = v.url; // save the original URL in case we want a relative value
                     }
                     Object.keys(v).map(key => {
-                        let retval = normalizeData(key, v[key], lang, dir, base);
+                        let retval = normalizeData(key, v[key], lang, dir);
                         if (retval.success) {
                             v[key] = retval.value;
                         }
@@ -127,32 +150,18 @@ function normalizeData(term, value, lang, dir, base) {
                 value: entities
             };
         }
-        else {
-            return {
-                success: false,
-                value: null
-            };
-        }
-    }
-    // URLs are weird because at the top level, they can be in arrays
-    // but at the object (e.g. linked resource) level, they are just strings
-    // so: if it's an array, keep it like that; else don't make it one.
-    else if (TermDefs.URLS.includes(term)) {
-        if (value instanceof Array) {
-            value = value.map(v => new URL(v, base).href);
-        }
-        else {
-            value = new URL(value, base).href;
-        }
         return {
-            success: true,
-            value: value
+            success: false,
+            value: null
         };
     }
-    // pass it through
+    // we purposely don't process URLs here, we do it in a separate step
+    // which allows us to also catch the URL properties on LinkedResources
+    
+    // else pass it through
     else {
         return {'success': true, 'value': value};
     }
 }
 
-export {normalizeData};
+export {normalize};

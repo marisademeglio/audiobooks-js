@@ -1,6 +1,7 @@
 import { fetchFile, fetchContentType, isValidLanguageTag } from './utils.js';
-import {normalizeData} from './normalizeData.js';
+import {normalize} from './normalizeData.js';
 import {dataValidation} from './dataValidation.js';
+import {validateUrlsAndRenormalize} from './validateUrlsAndRenormalize.js';
 
 const AUDIOBOOKS_PROFILE = "https://www.w3.org/TR/audiobooks/";
 
@@ -26,7 +27,7 @@ class ManifestProcessor {
         this._readingOrderItems = [];
     }
     
-    async loadJson(json, base = '', guessProfile = false) {
+    async loadJson(json, base = '', guessProfile = false, htmlUrl = '') {
         this.json = json;
         if (!this.processed.hasOwnProperty('base')) {
             this.processed.base = '';
@@ -60,17 +61,28 @@ class ManifestProcessor {
         if (!_manifest.hasOwnProperty('name')) {
             _manifest.name = '';
         }
-        Object.keys(_manifest).map(key => {
-            let retval = normalizeData(key, _manifest[key], 
-                this.processed.lang, this.processed.dir, this.processed.base);
-            if (retval.success) {
-                this.processed[key] = retval.value;
-            }
-        });
+
+        let {data: normalizedData, errors: normalizedErrors} = normalize(_manifest, this.processed);
+        this.errors = this.errors.concat(normalizedErrors);
+
+        Object.keys(normalizedData).map(k => this.processed[k] = normalizedData[k]);
+        //this.processed = {...this.processed, ...normalizedData};
+        //this.processed = normalizedData;
         
-        if (this.processed.name[0].value == '' && this.defaults.title != '') {
-            this.processed.name[0].value = this.defaults.title;
+        if (this.processed.name[0].value == '') {
+            if (this.defaults.title != '') {
+                this.processed.name[0].value = this.defaults.title;
+            }
+            else {
+                this.processed.name[0].value = "Publication";
+                this.errors.push({severity: "validation", msg: "No default title found"});
+            }
         }
+
+        let {data: urlsProcessed, errors: urlErrors} = validateUrlsAndRenormalize(this.processed);
+        this.errors = this.errors.concat(urlErrors);
+
+        this.processed = urlsProcessed;
 
         if (this.processed.profile == AUDIOBOOKS_PROFILE) {  
             try {
@@ -80,10 +92,14 @@ class ManifestProcessor {
                 this.errors.push({severity: "fatal", msg: `${err}`});
             }
         }  
+        
+        let {data: dataValidationProcessed, errors: dataValidationErrors} = dataValidation(this.processed);
 
-        let {data: processed_, errors: errors_} = dataValidation(this.processed);
-        this.processed = processed_;
-        this.errors = this.errors.concat(errors_);
+        this.processed = dataValidationProcessed;
+        
+        this.checkDocumentUrl(htmlUrl);
+
+        this.errors = this.errors.concat(dataValidationErrors);
     }
 
     checkContext() {
@@ -223,7 +239,32 @@ class ManifestProcessor {
             }
         }
         if (!this.processed.toc) {
-            this.errors.push({severity: "validation", msg: 'No HTML table of contents found'})
+            if (this.defaults.toc) {
+                this.processed.toc = true;
+            }
+            else {
+                this.errors.push({severity: "validation", msg: 'No HTML table of contents found'})
+            }
+        }
+    }
+
+    checkDocumentUrl(url) {
+        if (this.processed.hasOwnProperty("readingOrder") == false) {
+            this.processed.readingOrder = [];
+        }
+        if (this.processed.readingOrder.length == 0) {
+            if (url == '') {
+                this.errors.push({severity: "fatal", msg: "No reading order items"});
+            }
+            else {
+                this.processed.readingOrder.push({url});
+                this.processed.uniqueResources.push(url);
+            }
+        }
+        else {
+            if (url != '' && this.processed.uniqueResources.includes(url) == false) {
+                this.errors.push({severity: "validation", msg: "Document URL must be included as a reading order entry or resource entry."});
+            }
         }
     }
 };

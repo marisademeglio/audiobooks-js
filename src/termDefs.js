@@ -35,14 +35,15 @@ const TermDefs = {
         'readBy',
         'translator'
     ],
-    ARRAY_OF_OBJECTS: [
+    ACCESS_MODE_SUFFICIENT: [
         'accessModeSufficient'
     ],
     IDENTIFIERS: [
         'id'
     ],
     URLS: [
-        'url'
+        'url', 
+        'id'
     ],
     LITERALS: [
         'duration',
