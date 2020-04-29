@@ -152,7 +152,7 @@ function dataValidation(processed) {
         }
     }
 
-    // remove and warn about duplicates in resources
+    // warn about duplicates in resources
     if (processed_.hasOwnProperty('resources')) {
         let urls_ = processed_.resources.map(item => {
             let u = new URL(item.url);
@@ -160,24 +160,7 @@ function dataValidation(processed) {
         });
         let uniqueUrls_ = Array.from(new Set(urls_));
         if (urls_.length != uniqueUrls_.length) {
-            // remove duplicates
-            let j;
-            let uniqueResources_ = [];
-            for (j=0; j<processed_.resources.length; j++) {
-                let url1 = new URL(processed_.resources[j].url);
-                let itemExists = uniqueResources_.find(item => {
-                    let url2 = new URL(item.url);
-                    // compare the URLs without the fragment
-                    return `${url1.origin}${url1.pathname}` == `${url2.origin}${url2.pathname}`;
-                });
-                if (!itemExists) {
-                    uniqueResources_.push(processed_.resources[j]);
-                }
-                else {
-                    errors.push({severity: "validation", msg: `Duplicate resource ${processed_.resources[j].url}`});
-                }
-            }
-            processed_.resources = uniqueResources_;
+            errors.push({severity: "validation", msg: "Resources contain duplicate URLs"});
         }
     }
     
@@ -243,7 +226,7 @@ function audiobooksDataValidation(processed) {
     }
 
     if (processed_.readingOrder.length == 0) {
-        throw 'No reading order items available';
+        throw 'No audio reading order items available.';
     }
 
     // check type

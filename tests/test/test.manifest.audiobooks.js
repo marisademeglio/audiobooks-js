@@ -41,7 +41,7 @@ describe(`audiobooks-js audiobooks spec tests`, function() {
         let filename = 'manifests/manifest-audiobook-missing-readingOrder.json';
         it('Reports a validation error', async function() {
             let manifest = await loadManifest(filename);
-            expectError(manifest.errors, "fatal", 'Missing property "readingOrder"');
+            expectError(manifest.errors, "fatal", 'No reading order items available');
         });
     });
 
@@ -49,7 +49,7 @@ describe(`audiobooks-js audiobooks spec tests`, function() {
         let filename = 'manifests/manifest-audiobook-non-audio-readingOrder.json';
         it('Reports a fatal error about no reading order items available', async function() {
             let manifest = await loadManifest(filename);
-            expectError(manifest.errors, 'fatal', 'No reading order items available');
+            expectError(manifest.errors, 'fatal', 'No audio reading order items available');
         });
     });
 

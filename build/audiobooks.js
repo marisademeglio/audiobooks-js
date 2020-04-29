@@ -547,7 +547,7 @@ function dataValidation(processed) {
         }
     }
 
-    // remove and warn about duplicates in resources
+    // warn about duplicates in resources
     if (processed_.hasOwnProperty('resources')) {
         let urls_ = processed_.resources.map(item => {
             let u = new URL(item.url);
@@ -555,24 +555,7 @@ function dataValidation(processed) {
         });
         let uniqueUrls_ = Array.from(new Set(urls_));
         if (urls_.length != uniqueUrls_.length) {
-            // remove duplicates
-            let j;
-            let uniqueResources_ = [];
-            for (j=0; j<processed_.resources.length; j++) {
-                let url1 = new URL(processed_.resources[j].url);
-                let itemExists = uniqueResources_.find(item => {
-                    let url2 = new URL(item.url);
-                    // compare the URLs without the fragment
-                    return `${url1.origin}${url1.pathname}` == `${url2.origin}${url2.pathname}`;
-                });
-                if (!itemExists) {
-                    uniqueResources_.push(processed_.resources[j]);
-                }
-                else {
-                    errors$2.push({severity: "validation", msg: `Duplicate resource ${processed_.resources[j].url}`});
-                }
-            }
-            processed_.resources = uniqueResources_;
+            errors$2.push({severity: "validation", msg: "Resources contain duplicate URLs"});
         }
     }
     
@@ -638,7 +621,7 @@ function audiobooksDataValidation(processed) {
     }
 
     if (processed_.readingOrder.length == 0) {
-        throw 'No reading order items available';
+        throw 'No audio reading order items available.';
     }
 
     // check type
@@ -726,18 +709,25 @@ function validateUrlsAndRenormalize(data) {
     // Renormalize:
     // remove any LinkedResources that are now missing urls (because we removed invalid properties in the steps below)
     if (data.hasOwnProperty('links')) {
-        data['links'] = data['links'].filter(item => item.hasOwnProperty('url'));
+        data['links'] = removeItemsWithNoUrl(data['links']);
     }
     if (data.hasOwnProperty('readingOrder')) {
-        data['readingOrder'] = data['readingOrder'].filter(item => item.hasOwnProperty('url'));
+        data['readingOrder'] = removeItemsWithNoUrl(data['readingOrder']);
     }
     if (data.hasOwnProperty('resources')) {
-        data['resources'] = data['resources'].filter(item => item.hasOwnProperty('url'));
+        data['resources'] = removeItemsWithNoUrl(data['resources']);
     }
 
     return {data, errors: errors$3};
 }
 
+function removeItemsWithNoUrl(linkedResources) {
+    let items_ = linkedResources.filter(item => item.hasOwnProperty('url'));
+    if (items_.length != linkedResources.length) {
+        errors$3.push({severity: 'validation', msg: "LinkedResource removed"});
+    }
+    return items_;
+}
 function scanProperties(obj, base) {
     let data = obj;
     Object.keys(data).map(key => {
@@ -847,7 +837,7 @@ class ManifestProcessor {
 
         Object.keys(normalizedData).map(k => this.processed[k] = normalizedData[k]);
         //this.processed = {...this.processed, ...normalizedData};
-        //this.processed = normalizedData;
+        
         
         if (this.processed.name[0].value == '') {
             if (this.defaults.title != '') {
@@ -864,15 +854,6 @@ class ManifestProcessor {
 
         this.processed = urlsProcessed;
 
-        if (this.processed.profile == AUDIOBOOKS_PROFILE$1) {  
-            try {
-                await this.audiobooksProcessing();    
-            }  
-            catch(err) {
-                this.errors.push({severity: "fatal", msg: `${err}`});
-            }
-        }  
-        
         let {data: dataValidationProcessed, errors: dataValidationErrors} = dataValidation(this.processed);
 
         this.processed = dataValidationProcessed;
@@ -880,6 +861,15 @@ class ManifestProcessor {
         this.checkDocumentUrl(htmlUrl);
 
         this.errors = this.errors.concat(dataValidationErrors);
+        
+        if (this.processed.profile == AUDIOBOOKS_PROFILE$1) {  
+            try {
+                await this.audiobooksProcessing();    
+            }  
+            catch(err) {
+                this.errors.push({severity: "fatal", msg: `${err}`});
+            }
+        }
     }
 
     checkContext() {
@@ -906,8 +896,11 @@ class ManifestProcessor {
 
     checkReadingOrder() {
         if (!this.json.hasOwnProperty('readingOrder')) {
-            throw 'Missing property "readingOrder"';  
+            this.json.readingOrder = [];
         }
+        // if (!this.json.hasOwnProperty('readingOrder')) {
+        //     throw 'Missing property "readingOrder"';  
+        // }
         // this would be taken care of by 'normalize' except that doesn't happen until later
         // and some things we'd like to know now (in the case of guessing the profile)
         if (typeof this.json.readingOrder === "string") {
@@ -1034,7 +1027,7 @@ class ManifestProcessor {
         }
         if (this.processed.readingOrder.length == 0) {
             if (url == '') {
-                this.errors.push({severity: "fatal", msg: "No reading order items"});
+                this.errors.push({severity: "fatal", msg: "No reading order items available."});
             }
             else {
                 this.processed.readingOrder.push({url});
@@ -1049,7 +1042,7 @@ class ManifestProcessor {
     }
 }
 
-const VERSION = '0.2.2';
+const VERSION = '0.2.3';
 
 class Manifest {
     constructor () {

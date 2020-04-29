@@ -67,7 +67,7 @@ class ManifestProcessor {
 
         Object.keys(normalizedData).map(k => this.processed[k] = normalizedData[k]);
         //this.processed = {...this.processed, ...normalizedData};
-        //this.processed = normalizedData;
+        
         
         if (this.processed.name[0].value == '') {
             if (this.defaults.title != '') {
@@ -84,15 +84,6 @@ class ManifestProcessor {
 
         this.processed = urlsProcessed;
 
-        if (this.processed.profile == AUDIOBOOKS_PROFILE) {  
-            try {
-                await this.audiobooksProcessing();    
-            }  
-            catch(err) {
-                this.errors.push({severity: "fatal", msg: `${err}`});
-            }
-        }  
-        
         let {data: dataValidationProcessed, errors: dataValidationErrors} = dataValidation(this.processed);
 
         this.processed = dataValidationProcessed;
@@ -100,6 +91,15 @@ class ManifestProcessor {
         this.checkDocumentUrl(htmlUrl);
 
         this.errors = this.errors.concat(dataValidationErrors);
+        
+        if (this.processed.profile == AUDIOBOOKS_PROFILE) {  
+            try {
+                await this.audiobooksProcessing();    
+            }  
+            catch(err) {
+                this.errors.push({severity: "fatal", msg: `${err}`});
+            }
+        }
     }
 
     checkContext() {
@@ -126,8 +126,11 @@ class ManifestProcessor {
 
     checkReadingOrder() {
         if (!this.json.hasOwnProperty('readingOrder')) {
-            throw 'Missing property "readingOrder"';  
+            this.json.readingOrder = [];
         }
+        // if (!this.json.hasOwnProperty('readingOrder')) {
+        //     throw 'Missing property "readingOrder"';  
+        // }
         // this would be taken care of by 'normalize' except that doesn't happen until later
         // and some things we'd like to know now (in the case of guessing the profile)
         if (typeof this.json.readingOrder === "string") {
@@ -254,7 +257,7 @@ class ManifestProcessor {
         }
         if (this.processed.readingOrder.length == 0) {
             if (url == '') {
-                this.errors.push({severity: "fatal", msg: "No reading order items"});
+                this.errors.push({severity: "fatal", msg: "No reading order items available."});
             }
             else {
                 this.processed.readingOrder.push({url});

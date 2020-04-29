@@ -10,18 +10,25 @@ function validateUrlsAndRenormalize(data) {
     // Renormalize:
     // remove any LinkedResources that are now missing urls (because we removed invalid properties in the steps below)
     if (data.hasOwnProperty('links')) {
-        data['links'] = data['links'].filter(item => item.hasOwnProperty('url'));
+        data['links'] = removeItemsWithNoUrl(data['links']);
     }
     if (data.hasOwnProperty('readingOrder')) {
-        data['readingOrder'] = data['readingOrder'].filter(item => item.hasOwnProperty('url'));
+        data['readingOrder'] = removeItemsWithNoUrl(data['readingOrder']);
     }
     if (data.hasOwnProperty('resources')) {
-        data['resources'] = data['resources'].filter(item => item.hasOwnProperty('url'));
+        data['resources'] = removeItemsWithNoUrl(data['resources']);
     }
 
     return {data, errors};
 }
 
+function removeItemsWithNoUrl(linkedResources) {
+    let items_ = linkedResources.filter(item => item.hasOwnProperty('url'));
+    if (items_.length != linkedResources.length) {
+        errors.push({severity: 'validation', msg: "LinkedResource removed"});
+    }
+    return items_;
+}
 function scanProperties(obj, base) {
     let data = obj;
     Object.keys(data).map(key => {

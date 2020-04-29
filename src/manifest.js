@@ -1,7 +1,7 @@
 import { ManifestProcessor } from './manifestProcessor.js';
 import { fetchFile, fetchContentType } from './utils.js';
 
-const VERSION = '0.2.2';
+const VERSION = '0.2.3';
 
 class Manifest {
     constructor () {
