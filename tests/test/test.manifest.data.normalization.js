@@ -15,7 +15,7 @@ describe(`audiobooks-js data normalization tests`, function() {
             expect(manifest.data.author instanceof Array).to.equal(true);
             expect(manifest.data.author[0] instanceof Object).to.equal(true);
             expect(manifest.data.author[0].type[0]).to.equal('Person');
-            expect(manifest.data.author[0].name).to.equal('Herman Melville');
+            expect(manifest.data.author[0].name[0].value).to.equal('Herman Melville');
         });
         it(`Normalizes localizeable strings`, async function() {
             let manifest = await loadManifest(filename);
@@ -41,8 +41,8 @@ describe(`audiobooks-js data normalization tests`, function() {
             expect(manifest.data.author instanceof Array).to.equal(true);
             expect(manifest.data.author[0] instanceof Object).to.equal(true);
             expect(manifest.data.author[0].type[0]).to.equal('Person');
-            expect(manifest.data.author[0].name).to.equal('Herman Melville');
-            expect(manifest.data.author[1].name).to.equal('Other Person');
+            expect(manifest.data.author[0].name[0].value).to.equal('Herman Melville');
+            expect(manifest.data.author[1].name[0].value).to.equal('Other Person');
             expect(manifest.data.author[1].type[0]).to.equal('Person');
         });
         it(`Normalizes localizeable strings`, async function() {
@@ -70,6 +70,25 @@ describe(`audiobooks-js data normalization tests`, function() {
         it(`Makes alternate an array`, async function() {
             let manifest = await loadManifest(filename);
             expect(manifest.data.readingOrder[0].alternate instanceof Array).to.equal(true);
+        });
+    });
+
+    describe("Removes an invalid URL", function() {
+        let filename = "manifests/manifest-invalid-url.json";
+        it ('Removes the invalid URL from the array, leaving one value', async function() {
+            let manifest = await loadManifest(filename);
+            expect(manifest.data.url.length).to.equal(1);
+        });
+    });
+    describe("Removes property if all URLs are invalid", function() {
+        let filename = "manifests/manifest-invalid-url2.json";
+        it ('Removes the invalid URL property', async function() {
+            let manifest = await loadManifest(filename);
+            expect(manifest.data.hasOwnProperty('url')).to.equal(false);
+        });
+        it ('Removes the reading order item with an invalid URL', async function() {
+            let manifest = await loadManifest(filename);
+            expect(manifest.data.readingOrder.length).to.equal(1);
         });
     });
 });

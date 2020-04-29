@@ -68,8 +68,8 @@ describe(`audiobooks-js data validation tests`, function() {
                 rel: ["supplement"],
                 encodingFormat: "text/html"
             });
-            expectError(manifest.errors, "validation", `Link missing property "rel" *${new URL("images/coverThree.jpg", manifest.data.base).href}*`);
-            expectError(manifest.errors, "validation", 'Invalid value for property "rel" *cover*');
+            expectError(manifest.errors, "validation", `Link missing property "rel"`);
+            expectError(manifest.errors, "validation", 'Invalid value for property "rel"');
         })
     });
     describe('Extending publication resources (manifest-resources.json)', function() {
@@ -94,6 +94,19 @@ describe(`audiobooks-js data validation tests`, function() {
             expect(manifest.data.hasOwnProperty('resources')).to.equal(false);
             expect(manifest.data.links[0].hasOwnProperty('rel')).to.equal(false);
         });
-    })
+    });
+
+    describe("Removes invalid values", function() {
+        let filename = "manifests/manifest-invalid-values.json";
+        it('Lists one type', async function() {
+            let manifest = await loadManifest(filename);
+            expect(manifest.data.type.length).to.equal(1);
+        });
+        it('Removes invalid name property for cover', async function() {
+            let manifest = await loadManifest(filename);
+
+            expect(manifest.getResource("cover").hasOwnProperty('name')).to.equal(false);
+        })
+    });
 });
 

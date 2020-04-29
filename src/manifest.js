@@ -1,10 +1,12 @@
 import { ManifestProcessor } from './manifestProcessor.js';
 import { fetchFile, fetchContentType } from './utils.js';
 
+const VERSION = '0.2.2';
+
 class Manifest {
     constructor () {
         // error: {type: "parse", msg: "description"}
-        // types: parse | format | profile | validation
+        // types: fatal, validation
         this.errors = [];
         this.data = {};
         /*
@@ -22,11 +24,12 @@ class Manifest {
         this.defaults = {
             lang: '',
             dir: '',
-            title: ''
+            title: '',
+            toc: null
         };
         this.readingOrderIndex = 0;
         this.toc = false;
-        this.version = "0.2.1";
+        this.version = VERSION;
     }
     
     setSupportedProfiles(supportedProfiles) {
@@ -41,12 +44,39 @@ class Manifest {
         let json;
         let url_ = typeof url === "string" ? url : url.href;
         let base = url_;
+        let contentType = '';
         try {
-            let contentType = await fetchContentType(url_);
+            contentType = await fetchContentType(url_);
             // we're opening an HTML file
             if (contentType == 'text/html') {
-                let htmlFile = await fetchFile(url_);
+                let htmlFile = await fetchFile(url_); 
+                if (!htmlFile) {
+                    throw `Could not fetch ${url_}`;
+                }
                 let dom = new DOMParser().parseFromString(htmlFile, 'text/html');
+                if (dom.querySelector("title") != null && dom.querySelector('title').textContent != "") {
+                    this.defaults.title = dom.querySelector("title").textContent;
+                }
+                if (dom.querySelector("html") != null 
+                    && dom.querySelector("html").hasAttribute("lang") 
+                    && dom.querySelector("html").getAttribute("lang") != '') {
+                    this.defaults.lang = dom.querySelector("html").getAttribute("lang");
+                }
+                else {
+                    this.defaults.lang = "en";
+                }
+                if (dom.querySelector("html") != null 
+                    && dom.querySelector("html").hasAttribute("dir") 
+                    && dom.querySelector("html").getAttribute("dir") != '') {
+                    this.defaults.dir = dom.querySelector("html").getAttribute("dir");
+                }
+                else {
+                    this.defaults.dir = "ltr";
+                }
+                if (dom.querySelector("nav[role=doc-toc]")) {
+                    this.defaults.toc = dom.querySelector("nav[role=doc-toc]");
+                }
+                
                 let linkElm = dom.querySelector("link[rel='publication']");
                 if (linkElm === null) {
                     throw "Publication link not found";
@@ -69,10 +99,19 @@ class Manifest {
                     json = JSON.parse(data);
                     base = linkedManifestUrl;
                 }
+
+                // make sure that if there is no reading order, it gets set to the Document URL
+                if (!json.hasOwnProperty('readingOrder')) {
+                    json.readingOrder = url_;
+                }
+
             }
             // we're opening a JSON file
             else if (contentType == 'application/ld+json' || contentType == 'application/json') {
                 let data = await fetchFile(url_);
+                if (!data) {
+                    throw `Could not fetch ${url_}`;
+                }
                 json = JSON.parse(data);
             }
             else {
@@ -84,15 +123,15 @@ class Manifest {
             console.log(err);
             return;
         }
-        await this.loadJson(json, base, guessProfile);
+        await this.loadJson(json, base, guessProfile, contentType === "text/html" ? url_ : '');
     }
 
     // base is the baseUrl and has to be a string
-    async loadJson(json, base = '', guessProfile = false) {
+    async loadJson(json, base = '', guessProfile = false, htmlUrl = '') {
         let manifestProcessor = new ManifestProcessor();
         manifestProcessor.supportedProfiles = this.supportedProfiles;
         manifestProcessor.defaults = this.defaults;
-        await manifestProcessor.loadJson(json, base, guessProfile);
+        await manifestProcessor.loadJson(json, base, guessProfile, htmlUrl);
         this.data = manifestProcessor.processed;
         this.errors = this.errors.concat(manifestProcessor.errors);
     }
@@ -174,8 +213,8 @@ class Manifest {
     // absolute and relative URLs are both ok
     updateCurrentReadingOrderIndex(url) {
         let url_ = url.indexOf("://") == -1 ? 
-            new URL(url, this.data.base) : new URL(url);
-        
+        new URL(url, this.data.base) : new URL(url);
+    
         if (this.data.readingOrder) {
             let idx = this.data.readingOrder.findIndex(item => item.url == url_.href);
             if (idx != -1) {
