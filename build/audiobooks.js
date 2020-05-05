@@ -35,11 +35,16 @@ async function fetchContentType(file) {
     }
     if (res) {
         let contentType = res.headers.get("Content-Type");
-        if (contentType.indexOf(';') != -1) {
-            return contentType.split(';')[0];
+        if (contentType) {
+            if (contentType.indexOf(';') != -1) {
+                return contentType.split(';')[0];
+            }
+            else {
+                return contentType;
+            }
         }
         else {
-            return contentType;
+            return '';
         }
     }
     return '';
@@ -1047,7 +1052,7 @@ class ManifestProcessor {
     }
 }
 
-const VERSION = '0.2.4';
+const VERSION = '0.2.5';
 
 class Manifest {
     constructor () {
@@ -1091,6 +1096,7 @@ class Manifest {
         let url_ = typeof url === "string" ? url : url.href;
         let base = url_;
         let contentType = '';
+        this.errors = [];
         try {
             contentType = await fetchContentType(url_);
             // we're opening an HTML file

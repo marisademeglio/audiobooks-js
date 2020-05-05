@@ -1,4 +1,4 @@
-Version: 0.2.4
+Version: 0.2.5
 
 This is a spec-compliant audiobooks manifest processor. Given JSON input, it performs the processing steps as described in both [pub-manifest spec](https://www.w3.org/TR/pub-manifest/#manifest-processing) and  [audiobooks](https://www.w3.org/TR/audiobooks/#audio-manifest-processing). 
 
