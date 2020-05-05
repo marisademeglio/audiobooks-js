@@ -1,7 +1,7 @@
 import { ManifestProcessor } from './manifestProcessor.js';
 import { fetchFile, fetchContentType } from './utils.js';
 
-const VERSION = '0.2.4';
+const VERSION = '0.2.5';
 
 class Manifest {
     constructor () {
@@ -45,6 +45,7 @@ class Manifest {
         let url_ = typeof url === "string" ? url : url.href;
         let base = url_;
         let contentType = '';
+        this.errors = [];
         try {
             contentType = await fetchContentType(url_);
             // we're opening an HTML file
