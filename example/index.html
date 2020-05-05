@@ -38,18 +38,12 @@
                 // load a file
                 await manifest.loadUrl(document.querySelector("#inputFile").value);
                 
-                // report any errors
-                if (manifest.errors.length > 0) {
-                    document.querySelector("#status").innerHTML = "Error(s)";
-                    document.querySelector("#data").innerHTML = JSON.stringify(manifest.errors, null, 2);
-                }
-
-                // if there were no fatal errors, go ahead
-                if (manifest.errors.filter(e=>e.severity === "fatal").length == 0) {
-                    document.querySelector("#status").innerHTML = "Processed file";
-                    document.querySelector("#data").innerHTML = JSON.stringify(manifest.data, null, 2);
-                }
-
+                let errorText = manifest.errors.length > 0 ? 
+                    JSON.stringify(manifest.errors, null, 2) : "No errors";
+                document.querySelector("#status").innerHTML = 
+                        `Processed Document. \nErrors(s):\n${errorText}`;
+                document.querySelector("#data").innerHTML = JSON.stringify(manifest.data, null, 2);
+                
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);
                 });

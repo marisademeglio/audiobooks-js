@@ -160,9 +160,9 @@
 
             function formatJsonReport() {
                 let reportData = {
-                    "name": "audiobooks-js",
-                    "description": "Audiobooks parser",
-                    "href": "https://marisademeglio.github.io/audiobooks-js"
+                    "$name": "audiobooks-js",
+                    "$description": "Audiobooks parser",
+                    "$href": "https://marisademeglio.github.io/audiobooks-js"
                 };
                 answers.map(a => reportData[a.id] = a.passed);
                 document.querySelector("#jsonReport code").textContent = JSON.stringify(reportData, null, 2);
