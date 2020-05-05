@@ -36,11 +36,16 @@ async function fetchContentType(file) {
     }
     if (res) {
         let contentType = res.headers.get("Content-Type");
-        if (contentType.indexOf(';') != -1) {
-            return contentType.split(';')[0];
+        if (contentType) {
+            if (contentType.indexOf(';') != -1) {
+                return contentType.split(';')[0];
+            }
+            else {
+                return contentType;
+            }
         }
         else {
-            return contentType;
+            return '';
         }
     }
     return '';
