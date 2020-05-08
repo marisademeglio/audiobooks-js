@@ -133,7 +133,9 @@ class ManifestProcessor {
         // }
         // this would be taken care of by 'normalize' except that doesn't happen until later
         // and some things we'd like to know now (in the case of guessing the profile)
-        if (typeof this.json.readingOrder === "string") {
+        if ((typeof this.json.readingOrder === "string" 
+            || this.json.readingOrder instanceof Object)
+             && !(this.json.readingOrder instanceof Array) ) {
             this.json.readingOrder = [this.json.readingOrder];
         }
         // make an intermediate list of reading order objects
