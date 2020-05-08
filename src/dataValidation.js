@@ -269,7 +269,11 @@ function audiobooksDataValidation(processed) {
             return acc;
         }, 0);
 
-        if (totalDuration != getDurationInSeconds(processed_.duration)) {
+        // round to 3 decimal places before comparing
+        let durationA = parseFloat(totalDuration).toFixed(3);
+        let durationB = parseFloat(processed_.duration.replace("PT", "").replace("S", "")).toFixed(3);
+
+        if (durationA != durationB) {
             errors.push({severity: "validation", msg: 'Incorrect value for top-level property "duration"'});
         }
     }
