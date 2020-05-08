@@ -30,13 +30,22 @@
                 }]);
                 manifest.setDefaults({direction: 'ltr'});
                 document.querySelector("#version").textContent = manifest.version;
+
+                let urlSearchParams = new URLSearchParams(document.location.search);
+                if (urlSearchParams.has("q")) {
+                    loadManifest(urlSearchParams.get("q"));
+                }
             });
 
             document.querySelector("#load").addEventListener('click', async e => {
+                await loadManifest(document.querySelector("#inputFile").value);
+            });
+
+            async function loadManifest(url) {
                 clearAll();
                 
                 // load a file
-                await manifest.loadUrl(document.querySelector("#inputFile").value);
+                await manifest.loadUrl(url);
                 
                 let errorText = manifest.errors.length > 0 ? 
                     JSON.stringify(manifest.errors, null, 2) : "No errors";
@@ -47,7 +56,7 @@
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);
                 });
-            });
+            }
 
             function clearAll() {
                 document.querySelector("#status").innerHTML = '';
