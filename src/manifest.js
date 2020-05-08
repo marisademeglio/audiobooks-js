@@ -1,7 +1,7 @@
 import { ManifestProcessor } from './manifestProcessor.js';
 import { fetchFile, fetchContentType } from './utils.js';
 
-const VERSION = '0.2.5';
+const VERSION = '0.2.6';
 
 class Manifest {
     constructor () {
@@ -231,8 +231,13 @@ class Manifest {
 
     // get a resource based on its rel value
     getResource(rel) {
-        let resource = this.data.resources.find(r => r.rel ? r.rel.includes(rel) : false);
-        return resource ? resource : null;
+        if (this.data.hasOwnProperty("resources")) {
+            let resource = this.data.resources.find(r => r.rel ? r.rel.includes(rel) : false);
+            return resource ? resource : null;
+        }
+        else {
+            return null;
+        }
     }
     // for a localizable string, get the most sensible value, based on lang settings
     getL10NStringValue(l10nString, lang = '') {
