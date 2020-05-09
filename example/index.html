@@ -3,13 +3,9 @@
     <head>
         <title>audiobooks-js example</title>
         <style>
-            input {
-                width: 20vw;
-            }
-            code em {
-                font-weight: bold;
-            }
+
         </style>
+        <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
         <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
         <script src="../build/audiobooks.js" type="module"></script>
@@ -17,7 +13,7 @@
         <script type="module">
             import { Manifest } from '../build/audiobooks.js';
             var manifest;
-            document.addEventListener("DOMContentLoaded", () => {
+            document.addEventListener("DOMContentLoaded", async () => {
                 let inputFile = new URL("pub/manifest.json", document.location.href).href;
                 document.querySelector("#inputFile").setAttribute('value', inputFile);
                 
@@ -35,32 +31,59 @@
                 document.querySelector("#version").textContent = manifest.version;
 
                 let urlSearchParams = new URLSearchParams(document.location.search);
-                if (urlSearchParams.has("q")) {
-                    loadManifest(urlSearchParams.get("q"));
+                if (urlSearchParams.has("q") && urlSearchParams.get("q") != '') {
+                    await loadManifestByURL(urlSearchParams.get("q"));
                 }
             });
 
-            document.querySelector("#load").addEventListener('click', async e => {
-                await loadManifest(document.querySelector("#inputFile").value);
+            document.querySelector("#loadFile").addEventListener('click', async e => {
+                if (document.querySelector("#inputFile").value == '') {
+                    alert("Please enter a URL");
+                    return;
+                }
+                await loadManifestByURL(document.querySelector("#inputFile").value);
             });
 
-            async function loadManifest(url) {
+            document.querySelector("#loadText").addEventListener('click', async e => {
+                if (document.querySelector("#manifestText").value == '') {
+                    alert("Please enter JSON data");
+                    return;
+                }
+                if (document.querySelector("#baseUrl").value == '') {
+                    alert("Please enter a base URL");
+                    return;
+                }
+                await loadManifestJSON(document.querySelector("#manifestText").value, 
+                    document.querySelector("#baseUrl").value);
+            });
+
+            async function loadManifestByURL(url) {
                 clearAll();
-                
-                // load a file
                 await manifest.loadUrl(url);
+                displayResults();
+            }
+
+            async function loadManifestJSON(text, base) {
+                clearAll();
+                await manifest.loadJson(JSON.parse(text), base);
+                displayResults();
+            }
+
+            function displayResults() {
+
+                let errorText = "No errors";
+                if (manifest.errors.length > 0) {
+                    errorText = JSON.stringify(manifest.errors, null, 2);
+                    document.querySelector("#status").classList.add("errors");
+                }
                 
-                let errorText = manifest.errors.length > 0 ? 
-                    JSON.stringify(manifest.errors, null, 2) : "No errors";
-                document.querySelector("#status").innerHTML = 
-                        `Processed Document. \nErrors(s):\n${errorText}`;
+                document.querySelector("#status").innerHTML = errorText;
                 document.querySelector("#data").innerHTML = JSON.stringify(manifest.data, null, 2);
                 
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);
                 });
             }
-
             function clearAll() {
                 document.querySelector("#status").innerHTML = '';
                 document.querySelector("#data").innerHTML = '';
@@ -69,18 +92,39 @@
         </script>
     </head>
     <body>
-        <h1>Using <code>audiobooks-js</code></h1>
-        <p>Version <span id="version"></span></p>
+        <main>
+            <h1>Example of <code>audiobooks-js</code></h1>
+            <p>Version <span id="version"></span></p>
+    
+            <p>Enter a URL or paste in the contents of a JSON manifest below.</p>
+            
+            <p>You can also pass in a URL to a manifest file as a URL parameter, like this: </p>
+            <code>https://marisademeglio.github.io/audiobooks-js/example/<em>?q=https://w3c.github.io/publ-tests/test_content/audiobooks/Lang_Blue_Fairy_Book/index.html</em></code>
 
-        <p>Click "load" to load the sample file (or enter your own URL) and see the processed data output.</p>
-        <input id="inputFile" value="http://localhost:8080/example/pub/manifest.json"></input>
-        <button id="load">Load</button>
-
-        <p>You can also pass in a URL to a manifest file like this: </p>
-        <code>https://marisademeglio.github.io/audiobooks-js/example/<em>?q=https://w3c.github.io/publ-tests/test_content/audiobooks/Lang_Blue_Fairy_Book/index.html</em></code>
-
-        <pre><code id="status" class="json"></code></pre>
-        <pre><code id="data" class="json"></code></pre> 
-
+            <div class="sidebyside">
+                <div>
+                    <h2>Input</h2>
+                    <label for="inputFile">URL</label>
+                    <input id="inputFile" value="http://localhost:8080/example/pub/manifest.json"></input>
+                    <button id="loadFile">Load</button>
+                    
+                    <em class="big">OR</em>      
+                
+                    <label for="baseUrl">Base URL</label>
+                    <input type="text" id="baseUrl"/>
+                    
+                    <label for="manifestText">Manifest JSON</label>
+                    <textarea id="manifestText" rows="30" cols="60" spellcheck="false"></textarea>
+                    <button id="loadText">Load</button>
+                </div>
+                <div>
+                    <h2>Output</h2>
+                    <p>Errors:</p>
+                    <pre><code id="status" class="json"></code></pre>
+                    <p>Processed data:</p>
+                    <pre><code id="data" class="json"></code></pre> 
+                </div>
+            </div>
+        </main>
     </body>
 </html> 

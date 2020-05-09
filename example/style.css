@@ -1,0 +1,37 @@
+input {
+    width: 20vw;
+}
+label {
+    display: block;
+}
+label:after { 
+    content: ":";
+}
+code em {
+    font-weight: bold;
+}
+.sidebyside {
+    display: flex;
+    gap: 10rem;
+}
+em.big {
+    display: block;
+    font-size: x-large;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    font-weight: bold;
+}
+#baseUrl {
+    margin-bottom: 2rem;
+}
+button {
+    display: block;
+    font-size: larger;
+    border-radius: 10px;
+    background: lightgreen;
+    border: thin solid green;
+    margin-top: 1rem;
+}
+.errors {
+    border: thin solid red;
+}
