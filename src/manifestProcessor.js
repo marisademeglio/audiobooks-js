@@ -237,10 +237,15 @@ class ManifestProcessor {
         if (this.processed.hasOwnProperty('resources')) {
             let toc = this.processed.resources.find(r => r.rel ? r.rel.includes("contents") : false);
             if (toc != undefined) {
-                let tocFile = await fetchFile(toc.url);
-                const parser = new DOMParser();
-                const tocDoc = parser.parseFromString(tocFile, "text/html");
-                this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
+                try {    
+                    let tocFile = await fetchFile(toc.url);
+                    const parser = new DOMParser();
+                    const tocDoc = parser.parseFromString(tocFile, "text/html");
+                    this.processed.toc = tocDoc.documentElement.querySelector("[role=doc-toc]") != undefined;
+                }
+                catch(err) {
+                    this.errors.push({severity: "validation", msg: `Could not verify TOC resource ${toc.url}.`});
+                }
             }
         }
         if (!this.processed.toc) {
