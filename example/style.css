@@ -1,5 +1,5 @@
 input {
-    width: 20vw;
+    width: 20rem;
 }
 label {
     display: block;
@@ -34,4 +34,13 @@ button {
 }
 .errors {
     border: thin solid red;
+}
+
+@media (max-width: 768px) {
+    .sidebyside {
+        flex-direction: column;
+    }
+    textarea {
+        width: 95%;
+    }
 }
