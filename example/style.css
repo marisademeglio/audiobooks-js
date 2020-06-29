@@ -1,3 +1,8 @@
+body {
+    display: grid;
+    grid-template-rows: 30% auto;
+    grid-gap: 2rem;
+}
 input {
     width: 20rem;
 }
@@ -10,9 +15,12 @@ label:after {
 code em {
     font-weight: bold;
 }
+summary h2 {
+    display: inline;
+}
 .sidebyside {
     display: flex;
-    gap: 10rem;
+    gap: 10vw;
 }
 em.big {
     display: block;
@@ -28,8 +36,8 @@ button {
     display: block;
     font-size: larger;
     border-radius: 10px;
-    background: lightgreen;
-    border: thin solid green;
+/*     background: lightgreen; */
+    border: 2px solid green;
     margin-top: 1rem;
 }
 .errors {
@@ -43,4 +51,11 @@ button {
     textarea {
         width: 95%;
     }
+}
+
+#data {
+    height: 30rem;
+    width: 90%;
+    white-space: break-spaces;
+    overflow-y: scroll;
 }

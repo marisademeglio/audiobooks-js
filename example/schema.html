@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Audiobooks Schema Testing Tool</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.12.2/ajv.min.js"></script>
+        <script src="runner.js"></script>
+        <script type="module">
+            import * as validate from './validate.js';
+            (async () => {
+                validate.init();
+            })();
+            
+            init(validate, "pub/manifest.json", "n/a");
+            
+        </script>
+        <style>
+            body {
+                grid-row-gap: 1rem;
+            }
+            main {
+                display: grid;
+                grid-row-gap: 2rem;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Audiobooks Schema Testing Tool</h1>
+            <p>I.e. This Is Not A Validator</p>
+            <p>Version <span id="version"></span></div>
+        </header>
+        <main>
+            <p>
+                <a href="sample-files.html">Try with these sample files</a>
+            </p>
+            <div id="io">
+    
+            </div>
+        </main>
+        
+    </body>
+    
+    
+</html>

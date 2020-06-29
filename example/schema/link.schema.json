@@ -1,0 +1,77 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "link.schema.json",
+    "title": "Publication Links",
+    "type": "object",
+    "properties": {
+        "type": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "const": "LinkedResource"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "contains": {
+                        "const": "LinkedResource"
+                    }
+                }
+            ]
+        },
+        "url": {
+            "$ref": "url.schema.json"
+        },
+        "encodingFormat": {
+            "type": "string"
+        },
+        "name": {
+            "$ref": "localizable.schema.json"
+        },
+        "description": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "localizable-object.schema.json"
+                }
+            ]
+        },
+        "rel": {
+            "type": [
+                "string",
+                "array"
+            ],
+            "items": {
+                "type": "string"
+            }
+        },
+        "integrity": {
+            "type": "string"
+        },
+        "duration": {
+            "type": "string",
+            "pattern": "^P(?!$)((\\d+Y)|(\\d+\\.\\d+Y$))?((\\d+M)|(\\d+\\.\\d+M$))?((\\d+W)|(\\d+\\.\\d+W$))?((\\d+D)|(\\d+\\.\\d+D$))?(T(?=\\d)((\\d+H)|(\\d+\\.\\d+H$))?((\\d+M)|(\\d+\\.\\d+M$))?(\\d+(\\.\\d+)?S)?)??$"
+        },
+        "alternate": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "url.schema.json"
+                    },
+                    {
+                        "$ref": "link.schema.json"
+                    }
+                ]
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "url"
+    ]
+}
