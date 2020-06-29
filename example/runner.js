@@ -117,7 +117,7 @@ function createInputOutputElements() {
         <summary><h2>Output</h2></summary>
         <p>Errors:</p>
         <pre><code id="status" class="json"></code></pre>
-        <p>Processed data:</p>
+        <p>Data:</p>
         <pre><code id="data" class="json"></code></pre> 
     </details>
     `;
