@@ -9,11 +9,11 @@
         <script src="runner.js"></script>
         <script type="module">
             import * as validate from './validate.js';
-            (async () => {
-                validate.init();
-            })();
+            document.addEventListener("DOMContentLoaded", async e => {
+                await validate.init();
+                await init(validate, "pub/manifest.json", "n/a");
+            });
             
-            init(validate, "pub/manifest.json", "n/a");
             
         </script>
         <style>

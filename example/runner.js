@@ -4,7 +4,8 @@ var libversion;
 var onClearAllFn;
 var onDisplayResultsFn;
 
-function init(fileProcessor, exampleInput, version, onClearAll=null, onDisplayResults=null) {
+// call when page is loaded
+async function init(fileProcessor, exampleInput, version, onClearAll=null, onDisplayResults=null) {
     processor = fileProcessor;
     exampleFile = new URL(exampleInput, document.location.href).href;
     onClearAllFn = onClearAll;
@@ -12,39 +13,38 @@ function init(fileProcessor, exampleInput, version, onClearAll=null, onDisplayRe
 
     libversion = version;
     
-    document.addEventListener("DOMContentLoaded", async () => {
-        createInputOutputElements();
-        document.querySelector("#input").setAttribute("open", "open");
-        document.querySelector("#inputFile").setAttribute('value', exampleFile);
-        
-        document.querySelector("#version").textContent = libversion;
+    createInputOutputElements();
+    document.querySelector("#input").setAttribute("open", "open");
+    document.querySelector("#inputFile").setAttribute('value', exampleFile);
     
-        let urlSearchParams = new URLSearchParams(document.location.search);
-        if (urlSearchParams.has("q") && urlSearchParams.get("q") != '') {
-            await loadByUrl(urlSearchParams.get("q"));
-        }
+    document.querySelector("#version").textContent = libversion;
 
-        document.querySelector("#loadFile").addEventListener('click', async e => {
-            if (document.querySelector("#inputFile").value == '') {
-                alert("Please enter a URL");
-                return;
-            }
-            await loadByUrl(document.querySelector("#inputFile").value);
-        });
-    
-        document.querySelector("#loadText").addEventListener('click', async e => {
-            if (document.querySelector("#text").value == '') {
-                alert("Please enter JSON data");
-                return;
-            }
-            if (document.querySelector("#baseUrl").value == '') {
-                alert("Please enter a base URL");
-                return;
-            }
-            await loadJson(document.querySelector("#text").value, 
-                document.querySelector("#baseUrl").value);
-        });
+    let urlSearchParams = new URLSearchParams(document.location.search);
+    if (urlSearchParams.has("q") && urlSearchParams.get("q") != '') {
+        await loadByUrl(urlSearchParams.get("q"));
+    }
+
+    document.querySelector("#loadFile").addEventListener('click', async e => {
+        if (document.querySelector("#inputFile").value == '') {
+            alert("Please enter a URL");
+            return;
+        }
+        await loadByUrl(document.querySelector("#inputFile").value);
     });
+
+    document.querySelector("#loadText").addEventListener('click', async e => {
+        if (document.querySelector("#text").value == '') {
+            alert("Please enter JSON data");
+            return;
+        }
+        if (document.querySelector("#baseUrl").value == '') {
+            alert("Please enter a base URL");
+            return;
+        }
+        await loadJson(document.querySelector("#text").value, 
+            document.querySelector("#baseUrl").value);
+    });
+
 }
 
 async function loadByUrl(url) {
