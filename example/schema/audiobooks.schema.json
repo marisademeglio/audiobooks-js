@@ -1,7 +1,7 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "publication.schema.json",
-	"title": "Publication Manifest",
+	"$id": "audiobooks.schema.json",
+	"title": "Audiobooks Manifest",
 	"type": "object",
 	"properties": {
 		"@context": {
@@ -18,25 +18,37 @@
 			"uniqueItems": true
 		},
 		"type": {
-			"type": [
-				"string",
-				"array"
+			"oneOf": [
+				{
+					"type": "string",
+					"const": "Audiobook"
+				},
+				{
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"contains": {
+						"const": "Audiobook"
+					}
+				}
 			],
-			"items": {
-				"type": "string"
-			},
 			"uniqueItems": true
 		},
 		"conformsTo" : {
 			"oneOf": [
 				{
-					"$ref": "url.schema.json"
+					"type": "string",
+					"const": "https://www.w3.org/TR/audiobooks/"
 				},
 				{
 					"type": "array",
 					"items": {
-						"$ref": "url.schema.json"
-					}		
+						"type": "string"
+					},
+					"contains": {
+						"const": "https://www.w3.org/TR/audiobooks/"
+					}
 				}
 			]
 		},
@@ -189,6 +201,8 @@
 	},
 	"required": [
 		"@context",
-		"conformsTo"
+		"conformsTo",
+		"name",
+		"readingOrder"
 	]
 }
