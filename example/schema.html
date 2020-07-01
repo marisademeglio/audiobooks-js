@@ -9,9 +9,35 @@
         <script src="runner.js"></script>
         <script type="module">
             import * as validate from './validate.js';
+            let mode = "AUDIO";
             document.addEventListener("DOMContentLoaded", async e => {
                 await validate.init();
+
+                let urlSearchParams = new URLSearchParams(document.location.search);
+                if (urlSearchParams.has("mode") && urlSearchParams.get("mode") != '') {
+                    mode = urlSearchParams.get('mode');
+                }
+                validate.setMode(mode);
+                if (mode == "AUDIO") {
+                    document.querySelector("#mode-audiobooks").setAttribute("checked", "checked");
+                    document.querySelector("#mode-pubmanifest").removeAttribute("checked");
+                }
+                else if (mode == "PUB") {
+                    document.querySelector("#mode-pubmanifest").setAttribute("checked", "checked");
+                    document.querySelector("#mode-audiobooks").removeAttribute("checked");
+                }
+
                 await init(validate, "pub/manifest.json", "n/a");
+
+                
+                document.querySelector("#mode-audiobooks").addEventListener("change", e=>{
+                    validate.setMode("AUDIO");
+                    
+                });
+
+                document.querySelector("#mode-pubmanifest").addEventListener("change", e=>{
+                    validate.setMode("PUB");
+                });
             });
             
             
@@ -20,22 +46,43 @@
             body {
                 grid-row-gap: 1rem;
             }
-            main {
-                display: grid;
-                grid-row-gap: 2rem;
+            div input, div label {
+                display: inline;
+            }
+            /* override some stuff from the base styles */
+            input[type=radio] {
+                width: inherit;
+            }
+            label::after {
+                content: inherit;
+            }
+            #io {
+                margin-top: 2rem;
             }
         </style>
     </head>
     <body>
         <header>
             <h1>Audiobooks Schema Testing Tool</h1>
-            <p>I.e. This Is Not A Validator</p>
+            <p style="font-style: italic">Run the JSON-LD schema against a manifest. This Is Not A Validator</p>
             <p>Version <span id="version"></span></div>
         </header>
         <main>
             <p>
                 <a href="sample-files.html">Try with these sample files</a>
             </p>
+            <div>
+                <p>Select schema:</p>
+                <div>
+                    <input type="radio" name="mode" id="mode-audiobooks">
+                    <label for="mode-audiobooks">Audiobooks</label>
+                </div>
+                <div>
+                    <input type="radio" name="mode" id="mode-pubmanifest">
+                    <label for="mode-pubmanifest">Publication Manifest</label>
+                </div>
+                
+            </div>
             <div id="io">
     
             </div>

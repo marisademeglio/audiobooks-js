@@ -21,6 +21,7 @@ async function init(fileProcessor, exampleInput, version, onClearAll=null, onDis
 
     let urlSearchParams = new URLSearchParams(document.location.search);
     if (urlSearchParams.has("q") && urlSearchParams.get("q") != '') {
+        document.querySelector("#inputFile").setAttribute("value", urlSearchParams.get("q"));
         await loadByUrl(urlSearchParams.get("q"));
     }
 
@@ -49,6 +50,8 @@ async function init(fileProcessor, exampleInput, version, onClearAll=null, onDis
 
 async function loadByUrl(url) {
     clearAll();
+    document.querySelector("#output h2 span").textContent = `for 
+        ${new URL(url).pathname.split('/').reverse()[0]}`;
     await processor.loadUrl(url);
     displayResults();
 }
@@ -67,6 +70,9 @@ function displayResults() {
         errorText = JSON.stringify(processor.errors, null, 2);
         document.querySelector("#status").classList.add("errors");
     }
+    else {
+        document.querySelector("#status").classList.remove("errors");
+    }
     
     document.querySelector("#status").innerHTML = errorText;
     document.querySelector("#data").innerHTML = JSON.stringify(processor.data, null, 2);
@@ -80,6 +86,7 @@ function displayResults() {
     }
 }
 function clearAll() {
+    document.querySelector("#output h2 span").textContent = '';
     document.querySelector("#status").innerHTML = '';
     document.querySelector("#data").innerHTML = '';
 
@@ -114,7 +121,7 @@ function createInputOutputElements() {
     </details>
             
     <details id="output">
-        <summary><h2>Output</h2></summary>
+        <summary><h2>Output <span></span></h2></summary>
         <p>Errors:</p>
         <pre><code id="status" class="json"></code></pre>
         <p>Data:</p>

@@ -1,64 +1,94 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Schema Tester Tests</title>
-        <script>
-            const manifests = [
-                'manifest.json',
-                'manifest-audiobook-alternate.json',
-                'manifest-audiobook-bad-durations.json',
-                'manifest-audiobook-missing-cover.json',
-                'manifest-audiobook-missing-props.json',
-                'manifest-audiobook-missing-readingOrder.json',
-                'manifest-audiobook-missing-toc.json',
-                'manifest-audiobook-missing-type.json',
-                'manifest-audiobook-non-audio-readingOrder-2.json',
-                'manifest-audiobook-non-audio-readingOrder.json',
-                'manifest-audiobook.json',
-                'manifest-bad-links.json',
-                'manifest-case-insensitive-rel.json',
-                'manifest-context-missing.json',
-                'manifest-context-not-array.json',
-                'manifest-context-wrong-values.json',
-                'manifest-empty-arrays.json',
-                'manifest-invalid-lang-dir.json',
-                'manifest-invalid-url.json',
-                'manifest-invalid-url2.json',
-                'manifest-invalid-values.json',
-                'manifest-many-lang-dir.json',
-                'manifest-missing-or-bad-props.json',
-                'manifest-no-profile-not-html.json',
-                'manifest-no-profile.json',
-                'manifest-no-title.json',
-                'manifest-normalize-2.json',
-                'manifest-normalize.json',
-                'manifest-not-json.json',
-                'manifest-nothtml.json',
-                'manifest-resources.json',
-                'manifest-titles.json',
-                'manifest-toc.json'
-            ];
-            document.addEventListener("DOMContentLoaded", e => {
-                let ul = document.querySelector("ul");
-                let lis = manifests.map(m => {
-                    let pathToFile = new URL(`../tests/files/manifests/${m}`, document.location.href);
-                    return `<li><a href="schema.html?q=${pathToFile}">${m}</a></li>`;
-                });
-                ul.innerHTML = lis.join("");
+
+<head>
+    <title>Schema Tester Tests</title>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", e => {
+            let lis = Array.from(document.querySelectorAll("li"));
+            lis.map(li => {
+                let a1 = li.querySelector("a");
+                let pathToFile = new URL(a1.getAttribute('href'), document.location.href).href;
+                let mode = "PUB";
+                // guess, because i know how i named these files
+                if (a1.getAttribute('href').indexOf('audio') != -1) {
+                    mode = "AUDIO";
+                }
+                let a2 = document.createElement('a');
+                a2.setAttribute("href", `schema.html?q=${pathToFile}&mode=${mode}`);
+                a2.textContent = "[run]";
+                li.appendChild(a2);
             });
-        </script>
-    </head>
-    <body>
-        <h1>Schema tester tests</h1>
-        <p>These are manifest files that I had lying around for testing a library. They're not all valid and many have errors
-            that would not be picked up by a schema validator, but rather a processor. That is to say, this is not a comprehensive 
-            set of files for testing schema. It is, however, a whole bunch of manifest files.
-        </p>
-        </p>
+
+        });
+    </script>
+    <style>
+        li > a {
+            margin-right: 0.5rem;
+        }
+        li {
+            line-height: 1.6;
+        }
+        li a:last-child {
+            color: maroon;
+        }
         
-        <ul>
-            
-        </ul>
-    </body>
-    
+    </style>
+</head>
+
+<body>
+    <h1>Schema tester tests</h1>
+    <p>These are manifest files that I had lying around for testing a library. They're not all valid and many have
+        errors
+        that would not be picked up by a schema validator, but rather a processor. That is to say, this is not a
+        comprehensive
+        set of files for testing schema. It is, however, a whole bunch of manifest files. Click 'run' to check a file
+        against the schema.
+    </p>
+    </p>
+
+    <ul>
+        <li><a href='../tests/files/manifests/manifest.json'><code>manifest.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-alternate.json'><code>manifest-audiobook-alternate.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-bad-durations.json'><code>manifest-audiobook-bad-durations.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-missing-cover.json'><code>manifest-audiobook-missing-cover.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-missing-props.json'><code>manifest-audiobook-missing-props.json</code></a></li>
+        <li><a
+                href='../tests/files/manifests/manifest-audiobook-missing-readingOrder.json'><code>manifest-audiobook-missing-readingOrder.json</code></a>
+        </li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-missing-toc.json'><code>manifest-audiobook-missing-toc.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-audiobook-missing-type.json'><code>manifest-audiobook-missing-type.json</code></a></li>
+        <li><a
+                href='../tests/files/manifests/manifest-audiobook-non-audio-readingOrder-2.json'><code>manifest-audiobook-non-audio-readingOrder-2.json</code></a>
+        </li>
+        <li><a
+                href='../tests/files/manifests/manifest-audiobook-non-audio-readingOrder.json'><code>manifest-audiobook-non-audio-readingOrder.json</code></a>
+        </li>
+        <li><a href='../tests/files/manifests/manifest-audiobook.json'><code>manifest-audiobook.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-bad-links.json'><code>manifest-bad-links.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-case-insensitive-rel.json'><code>manifest-case-insensitive-rel.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-context-missing.json'><code>manifest-context-missing.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-context-not-array.json'><code>manifest-context-not-array.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-context-wrong-values.json'><code>manifest-context-wrong-values.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-empty-arrays.json'><code>manifest-empty-arrays.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-invalid-lang-dir.json'><code>manifest-invalid-lang-dir.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-invalid-url.json'><code>manifest-invalid-url.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-invalid-url2.json'><code>manifest-invalid-url2.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-invalid-values.json'><code>manifest-invalid-values.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-many-lang-dir.json'><code>manifest-many-lang-dir.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-missing-or-bad-props.json'><code>manifest-missing-or-bad-props.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-no-profile-not-html.json'><code>manifest-no-profile-not-html.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-no-profile.json'><code>manifest-no-profile.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-no-title.json'><code>manifest-no-title.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-normalize-2.json'><code>manifest-normalize-2.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-normalize.json'><code>manifest-normalize.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-not-json.json'><code>manifest-not-json.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-nothtml.json'><code>manifest-nothtml.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-resources.json'><code>manifest-resources.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-titles.json'><code>manifest-title.json</code></a></li>
+        <li><a href='../tests/files/manifests/manifest-toc.json'><code>manifest-toc.json</code></a></li>
+    </ul>
+</body>
+
 </html>
