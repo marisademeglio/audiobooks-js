@@ -2,18 +2,22 @@ const schemas = [
     'bcp.schema.json',
     'contributor-object.schema.json',
     'contributor.schema.json',
+    'ItemList.schema.json',
     'link.schema.json',
     'localizable-object.schema.json',
     'localizable.schema.json',
     'publication.schema.json',
     'resource.categorization.schema.json',
-    'url.schema.json'
+    'url.schema.json',
+    'audiobooks.schema.json'
 ];
 
 let ajv;
 let runValidation;
 let errors = [];
 let data = {};
+let validationMode = "AUDIO";
+
 async function init() {
     ajv = new Ajv({ allErrors: true, coerceTypes: 'array'});
     let schemaObjects = await Promise.all(
@@ -24,9 +28,13 @@ async function init() {
             return schema;
         })
     );
-    
+
     ajv.addMetaSchema(schemaObjects);
     runValidation = ajv.getSchema('publication.schema.json');
+}
+// mode = PUB or AUDIO
+function setMode(mode) {
+    validationMode = mode;
 }
 async function loadUrl(url) {
     let filedata = await fetch(new URL(url).href);
@@ -35,6 +43,9 @@ async function loadUrl(url) {
     loadJson(json);
 }
 function loadJson(json) {
+    if (validationMode == "AUDIO") {
+        runValidation = ajv.getSchema('audiobooks.schema.json');
+    }
     runValidation(json);
     errors = runValidation.errors;
     if (!errors) {
@@ -43,4 +54,4 @@ function loadJson(json) {
     data = json;
 }
 
-export { init, loadUrl, loadJson, errors, data };
+export { init, loadUrl, loadJson, setMode, errors, data };
