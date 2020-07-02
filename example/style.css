@@ -36,7 +36,6 @@ button {
     display: block;
     font-size: larger;
     border-radius: 10px;
-/*     background: lightgreen; */
     border: 2px solid green;
     margin-top: 1rem;
 }
@@ -53,9 +52,24 @@ button {
     }
 }
 
-#data {
-    height: 30rem;
+details {
+    max-width: 60rem;
+}
+#data, #status {
+    max-height: 30rem;
     width: 90%;
     white-space: break-spaces;
-    overflow-y: scroll;
+}
+
+#output p {
+    display: flex;
+    justify-content: space-between;
+}
+#output p button {
+    border: thin darkgray solid;
+    border-radius: 0;
+    font-size: revert;
+}
+#output pre {
+    overflow: scroll;
 }

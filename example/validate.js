@@ -1,19 +1,25 @@
 const schemas = [
-    'bcp.schema.json',
-    'contributor-object.schema.json',
-    'contributor.schema.json',
-    'ItemList.schema.json',
-    'link.schema.json',
-    'localizable-object.schema.json',
-    'localizable.schema.json',
-    'publication.schema.json',
-    'resource.categorization.schema.json',
-    'url.schema.json',
-    'audiobooks.schema.json'
+    "module/bcp.schema.json",
+    "module/context.schema.json",
+    "module/contributor-object.schema.json",
+    "module/contributor.schema.json",
+    "module/date.schema.json",
+    "module/duration.schema.json",
+    "module/item-lists.schema.json",
+    "module/ItemList.schema.json",
+    "module/language.schema.json",
+    "module/link.schema.json",
+    "module/localizable-object.schema.json",
+    "module/localizable.schema.json",
+    "module/resource.categorization.schema.json",
+    "module/strings.schema.json",
+    "module/url.schema.json",
+    "module/urls.schema.json",
+    "publication.schema.json",
+    "audiobooks.schema.json"
 ];
 
 let ajv;
-let runValidation;
 let errors = [];
 let data = {};
 let validationMode = "AUDIO";
@@ -30,7 +36,6 @@ async function init() {
     );
 
     ajv.addMetaSchema(schemaObjects);
-    runValidation = ajv.getSchema('publication.schema.json');
 }
 // mode = PUB or AUDIO
 function setMode(mode) {
@@ -43,9 +48,10 @@ async function loadUrl(url) {
     loadJson(json);
 }
 function loadJson(json) {
-    if (validationMode == "AUDIO") {
-        runValidation = ajv.getSchema('audiobooks.schema.json');
-    }
+    let runValidation = validationMode === "AUDIO" ? 
+        ajv.getSchema('audiobooks.schema.json') 
+        : ajv.getSchema('publication.schema.json');
+    
     runValidation(json);
     errors = runValidation.errors;
     if (!errors) {

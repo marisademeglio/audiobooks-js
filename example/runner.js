@@ -46,6 +46,14 @@ async function init(fileProcessor, exampleInput, version, onClearAll=null, onDis
             document.querySelector("#baseUrl").value);
     });
 
+    document.querySelector("#copyErrorsToClipboard").addEventListener('click', e => {
+        navigator.clipboard.writeText(document.querySelector("#status").textContent);
+    });
+
+    document.querySelector("#copyDataToClipboard").addEventListener('click', e => {
+        navigator.clipboard.writeText(document.querySelector("#data").textContent);
+    });
+
 }
 
 async function loadByUrl(url) {
@@ -122,9 +130,9 @@ function createInputOutputElements() {
             
     <details id="output">
         <summary><h2>Output <span></span></h2></summary>
-        <p>Errors:</p>
+        <p><span>Errors:</span><button id="copyErrorsToClipboard">Copy</button></p>
         <pre><code id="status" class="json"></code></pre>
-        <p>Data:</p>
+        <p><span>Data:</span><button id="copyDataToClipboard">Copy</button></p>
         <pre><code id="data" class="json"></code></pre> 
     </details>
     `;
